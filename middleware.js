@@ -21,12 +21,16 @@ export async function middleware(request) {
     }
   )
 
-  await supabase.auth.getUser() // refreshes session cookies
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    const loginUrl = new URL('/admin/login', request.url)
+    return NextResponse.redirect(loginUrl)
+  }
 
   return supabaseResponse
 }
 
 export const config = {
-  // ⚠️ exclude /admin/login from the matcher
   matcher: ['/admin/((?!login).*)'],
 }
