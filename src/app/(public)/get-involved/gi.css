@@ -1,0 +1,377 @@
+/* ═══════════════════════════════════════════════════════════
+   GET INVOLVED CSS MODULE — gi.css
+   Implements exact design system specifications
+═══════════════════════════════════════════════════════════ */
+
+.gi-main {
+  /* Exact Design Tokens */
+  --navy: #1f2a44;
+  --navy-dark: #131c30;
+  --navy-mid: #26354f;
+  --navy-light: #2e4266;
+  --navy-deep: #0c1220;
+  --beige: #e8dcc8;
+  --beige-dark: #d5c9b0;
+  --beige-light: #f4efe6;
+  --beige-warm: #faf6ef;
+  --gold: #c8a75e;
+  --gold-light: #e2c07a;
+  --gold-dark: #a07c3a;
+  --text-muted: #6b7a96;
+  
+  --shadow-sm: 0 2px 12px rgba(19,28,48,0.08);
+  --shadow-md: 0 8px 32px rgba(19,28,48,0.12);
+  --shadow-lg: 0 20px 60px rgba(19,28,48,0.18);
+  --shadow-xl: 0 32px 80px rgba(19,28,48,0.24);
+  --shadow-gold: 0 8px 32px rgba(200,167,94,0.25);
+  
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --transition: all 0.35s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+
+/* ── Scroll reveals ── */
+.gi-reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition: opacity 0.7s cubic-bezier(0.25,0.46,0.45,0.94),
+              transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94);
+}
+.gi-reveal-active {
+  opacity: 1 !important;
+  transform: translateY(0) !important;
+}
+
+/* ── SECTION 1: HERO ── */
+.gi-hero {
+  min-height: 70vh;
+  background: linear-gradient(180deg, var(--navy-deep) 0%, var(--navy-dark) 40%, var(--navy) 80%, #1e2d45 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 70px 5% 0;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Straight-edge hero bottom with gradient fade into beige-warm */
+.gi-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent 0%, var(--beige-warm) 100%);
+  pointer-events: none;
+}
+
+/* Push content above the fade overlay */
+.gi-hero > * {
+  position: relative;
+  z-index: 1;
+  margin-bottom: 0;
+}
+.gi-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 50%, rgba(200,167,94,0.15) 0%, transparent 75%);
+  pointer-events: none;
+}
+.gi-hero-badge {
+  display: inline-block;
+  padding: 6px 18px;
+  background: rgba(200,167,94,0.15);
+  border: 1px solid var(--gold);
+  border-radius: 999px;
+  color: var(--gold-light);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  margin-bottom: 1.5rem;
+}
+.gi-hero h1 {
+  font-size: clamp(2.8rem, 6vw, 5rem);
+  font-weight: 800;
+  color: var(--beige);
+  letter-spacing: -1.5px;
+  margin: 0 0 1.25rem;
+  line-height: 1.1;
+}
+.gi-hero p {
+  font-size: 1.05rem;
+  color: rgba(232,220,200,0.72);
+  max-width: 600px;
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.6;
+  padding-bottom: 140px;
+}
+
+/* ── SECTION 2: ROLE SYSTEM & TABS ── */
+.gi-role-section {
+  background: var(--beige-warm);
+  padding: 90px 5%;
+}
+.gi-tab-row {
+  display: flex;
+  max-width: 500px;
+  margin: 0 auto 4rem;
+  border-radius: 10px;
+  overflow: hidden;
+  background: rgba(19,28,48,0.06);
+  padding: 4px;
+  border: 1px solid rgba(213,201,176,0.8);
+}
+.gi-tab {
+  flex: 1;
+  padding: 12px 24px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--navy);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.gi-tab-active {
+  background: var(--navy);
+  color: var(--beige);
+  box-shadow: 0 4px 16px rgba(19,28,48,0.2);
+}
+.gi-role-container {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.gi-role-header {
+  text-align: center;
+  margin-bottom: 3.5rem;
+}
+.gi-role-header h2 {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: var(--navy);
+  margin: 0 0 0.75rem;
+}
+.gi-commitment-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--gold-dark);
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 1.5rem;
+}
+.gi-role-header p {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.85;
+  color: var(--text-muted);
+  max-width: 720px;
+  margin: 0 auto;
+}
+.gi-lists-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+}
+.gi-list-column h3 {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--gold-dark);
+  margin: 0 0 1.5rem;
+  border-bottom: 1px solid var(--beige-dark);
+  padding-bottom: 0.5rem;
+}
+.gi-list-column ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.gi-list-column li {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.92rem;
+  color: var(--navy);
+  font-weight: 500;
+  line-height: 1.5;
+  background: #ffffff;
+  border: 1px solid var(--beige-dark);
+  border-radius: 10px;
+  padding: 14px 16px;
+  box-shadow: 0 2px 8px rgba(19,28,48,0.05);
+  transition: var(--transition);
+}
+.gi-list-column li:hover {
+  border-color: var(--gold);
+  box-shadow: 0 4px 16px rgba(200,167,94,0.15);
+  transform: translateY(-1px);
+}
+.gi-list-column li svg {
+  color: var(--gold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* Responsibilities: subtle navy tint; Benefits: subtle gold tint */
+.gi-list-column:first-child li {
+  background: rgba(31,42,68,0.03);
+  border-color: rgba(31,42,68,0.12);
+}
+.gi-list-column:last-child li {
+  background: rgba(200,167,94,0.06);
+  border-color: rgba(200,167,94,0.25);
+}
+
+/* ── INNER APP ACTION CARD ── */
+.gi-apply-card {
+  background: var(--navy);
+  border-radius: var(--radius-lg);
+  padding: 3.5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+}
+.gi-apply-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(200,167,94,0.18) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+.gi-apply-card h3 {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: var(--beige);
+  margin: 0 0 0.5rem;
+}
+.gi-apply-card p {
+  font-size: 1rem;
+  color: rgba(232,220,200,0.7);
+  margin: 0 0 2.5rem;
+}
+.gi-apply-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0.95rem 2.75rem;
+  background: var(--gold);
+  color: var(--navy-dark);
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-decoration: none;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+.gi-apply-btn[disabled] {
+  background: rgba(200,167,94,0.15);
+  color: var(--gold);
+  border: 1px solid rgba(200,167,94,0.3);
+  cursor: not-allowed;
+}
+
+/* Shimmer Sweep Animation */
+.gi-apply-btn:not([disabled])::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 50%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+}
+.gi-apply-btn:not([disabled]):hover::after {
+  left: 150%;
+  transition: left 0.75s ease-in-out;
+}
+.gi-apply-btn:not([disabled]):hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+/* ── SECTION 3: CONTACT CTA FOOTER ── */
+.gi-questions {
+  background: var(--navy);
+  padding: 95px 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.gi-questions::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 50%, rgba(200,167,94,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+.gi-questions h2 {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: var(--beige);
+  margin: 0 0 0.75rem;
+}
+.gi-questions p {
+  font-size: 1.1rem;
+  color: rgba(232,220,200,0.72);
+  margin: 0 0 2.5rem;
+}
+.gi-actions-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+}
+.gi-fill-btn {
+  padding: 0.95rem 2.5rem;
+  background: var(--gold);
+  color: var(--navy-dark);
+  font-weight: 700;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.gi-fill-btn:hover {
+  background: var(--gold-light);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-2px);
+}
+.gi-ghost-btn {
+  padding: 0.95rem 2.5rem;
+  background: transparent;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  font-weight: 600;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: var(--transition);
+}
+.gi-ghost-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: #ffffff;
+}
+
+/* Responsive Overrides */
+@media (max-width: 768px) {
+  .gi-lists-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,0 +1,383 @@
+/* ── research-detail.css ─────────────────────────────────
+   Research detail page.
+   Navy / beige / gold palette. Scoped: .rd2-
+   Poppins typeface throughout.
+───────────────────────────────────────────────────────── */
+
+/* ── Shell ── */
+.rd2-page {
+  background: var(--beige-warm);
+  min-height: 100vh;
+  color: var(--navy);
+}
+
+.rd2-container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 2rem;
+}
+
+/* ── Topbar / Back ── */
+.rd2-topbar {
+  background: var(--beige-warm);
+  border-bottom: 1px solid var(--beige-dark);
+}
+
+.rd2-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 1.1rem 0;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+
+.rd2-back:hover {
+  color: var(--gold-dark);
+}
+
+/* ── Hero ── */
+.rd2-hero {
+  background: linear-gradient(140deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
+  padding: 4rem 0 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.rd2-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 80% 50%, rgba(200,167,94,0.10) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.rd2-hero .rd2-container {
+  position: relative;
+  z-index: 1;
+}
+
+.rd2-badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.rd2-badge {
+  display: inline-block;
+  padding: 4px 14px;
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.rd2-badge-category {
+  background: rgba(200,167,94,0.18);
+  color: var(--gold-light);
+  border: 1px solid rgba(200,167,94,0.35);
+}
+
+.rd2-badge-status {
+  background: rgba(52, 211, 153, 0.14);
+  color: #4ade80;
+  border: 1px solid rgba(52, 211, 153, 0.3);
+}
+
+.rd2-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-weight: 800;
+  color: #f1f5f9;
+  line-height: 1.2;
+  margin: 0 0 1rem;
+  max-width: 860px;
+  letter-spacing: -0.015em;
+}
+
+.rd2-date {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 400;
+  color: rgba(148,163,184,0.9);
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* ── Body grid ── */
+.rd2-body {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 2.5rem;
+  padding-top: 2.5rem;
+  padding-bottom: 5rem;
+  align-items: start;
+}
+
+/* ── Sections ── */
+.rd2-section {
+  margin-bottom: 2.75rem;
+}
+
+.rd2-section-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  margin: 0 0 1.1rem;
+  padding-bottom: 0.65rem;
+  border-bottom: 2px solid var(--gold);
+  display: inline-block;
+}
+
+/* ── Abstract ── */
+.rd2-abstract p {
+  font-family: 'Poppins', sans-serif;
+  font-size: 1.02rem;
+  font-weight: 300;
+  font-style: italic;
+  line-height: 1.9;
+  color: #374151;
+  margin: 0 0 1.1rem;
+  max-width: 760px;
+}
+
+/* ── Authors ── */
+.rd2-authors-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 0.85rem;
+}
+
+.rd2-author-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  background: #fff;
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+}
+
+.rd2-author-card:hover {
+  border-color: rgba(200,167,94,0.4);
+  box-shadow: var(--shadow-gold);
+  transform: translateY(-2px);
+}
+
+.rd2-author-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--navy);
+  color: var(--gold);
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  border: 2px solid rgba(200,167,94,0.2);
+}
+
+.rd2-author-name {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  color: var(--navy);
+}
+
+.rd2-author-role {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--gold-dark);
+  margin-top: 2px;
+}
+
+.rd2-author-affil {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.75rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* ── Tags ── */
+.rd2-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.rd2-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 13px;
+  background: #fff;
+  border: 1px solid var(--beige-dark);
+  border-radius: 999px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: var(--transition);
+}
+
+.rd2-tag:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+}
+
+/* ── Sidebar ── */
+.rd2-sidebar {
+  position: sticky;
+  top: 2rem;
+}
+
+.rd2-card {
+  background: #fff;
+  border: 1px solid var(--beige-dark);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.rd2-card-title {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  color: var(--text-muted);
+  margin: 0 0 1.1rem;
+}
+
+/* Link buttons */
+.rd2-link-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.rd2-link-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 700;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.rd2-link-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%; width: 60%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.25), transparent);
+  transition: left 0.45s ease;
+}
+
+.rd2-link-btn:hover::after {
+  left: 150%;
+}
+
+.rd2-link-btn-primary {
+  background: var(--gold);
+  color: var(--navy-dark);
+}
+
+.rd2-link-btn-primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.rd2-link-btn-secondary {
+  background: transparent;
+  color: var(--navy);
+  border: 2px solid var(--navy-light);
+}
+
+.rd2-link-btn-secondary:hover {
+  border-color: var(--gold);
+  color: var(--gold-dark);
+  transform: translateY(-2px);
+}
+
+/* Details list */
+.rd2-details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.rd2-detail-row {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.rd2-detail-label {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.67rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+}
+
+.rd2-detail-value {
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--navy);
+  line-height: 1.4;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .rd2-body {
+    grid-template-columns: 1fr;
+  }
+
+  .rd2-sidebar {
+    position: static;
+  }
+
+  .rd2-hero {
+    padding: 3rem 0 2.5rem;
+  }
+}
+
+@media (max-width: 500px) {
+  .rd2-container {
+    padding: 0 1.25rem;
+  }
+
+  .rd2-abstract p {
+    font-size: 0.95rem;
+  }
+}

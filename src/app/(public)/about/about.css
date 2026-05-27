@@ -1,0 +1,1231 @@
+/* ============================================================
+   YOUTHVERSE UNION — ABOUT PAGE STYLES
+   src/app/about/about.css
+   Imported ONLY in src/app/about/page.js
+============================================================ */
+
+/* ── Shared utilities ──────────────────────────────────────── */
+
+.ab-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(200, 167, 94, 0.12);
+  border: 1px solid rgba(200, 167, 94, 0.35);
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  padding: 7px 18px;
+  border-radius: 50px;
+  margin-bottom: 1.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-pill--dark {
+  background: rgba(232, 220, 200, 0.1);
+  border-color: rgba(232, 220, 200, 0.2);
+  color: rgba(232, 220, 200, 0.75);
+}
+
+.ab-divider {
+  width: 40px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), var(--gold-light), transparent);
+  margin: 1.25rem 0;
+  border-radius: 2px;
+}
+
+.ab-divider--center {
+  margin: 1.25rem auto;
+}
+
+/* ── Buttons ────────────────────────────────────────────────── */
+
+.ab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 28px;
+  border-radius: 50px;
+  font-family: 'Poppins', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  cursor: pointer;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.ab-btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent);
+  transition: left 0.5s ease;
+}
+
+.ab-btn:hover::after {
+  left: 160%;
+}
+
+.ab-btn--primary {
+  background: linear-gradient(135deg, var(--gold), var(--gold-light));
+  color: var(--navy-dark);
+  box-shadow: var(--shadow-gold);
+}
+
+.ab-btn--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(200, 167, 94, 0.35);
+}
+
+.ab-btn--ghost {
+  background: transparent;
+  border: 1.5px solid rgba(200, 167, 94, 0.4);
+  color: var(--beige);
+}
+
+.ab-btn--ghost:hover {
+  border-color: var(--gold);
+  background: rgba(200, 167, 94, 0.08);
+  transform: translateY(-2px);
+}
+
+.ab-btn--ghost-light {
+  border-color: rgba(232, 220, 200, 0.35);
+  color: var(--beige);
+}
+
+.ab-btn--ghost-light:hover {
+  border-color: var(--beige);
+  background: rgba(232, 220, 200, 0.1);
+}
+
+/* ── SECTION 1: HERO ────────────────────────────────────────── */
+
+.ab-hero {
+  min-height: 92vh;
+  background: linear-gradient(135deg, var(--navy-deep) 0%, var(--navy-dark) 50%, #1a2740 100%);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 120px 7% 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.ab-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 70% 50%, rgba(200, 167, 94, 0.09) 0%, transparent 55%),
+    radial-gradient(ellipse at 15% 70%, rgba(46, 66, 102, 0.55) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+/* Gradient bottom fade into next section */
+.ab-hero-fade {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 120px;
+  background: linear-gradient(to bottom, transparent, var(--beige-warm));
+  pointer-events: none;
+}
+
+/* Split layout */
+.ab-hero-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 1300px;
+  margin: 0 auto;
+  width: 100%;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 3rem;
+  align-items: center;
+  padding-bottom: 100px;
+}
+
+.ab-hero-content {
+  position: relative;
+  z-index: 2;
+}
+
+.ab-hero-kicker {
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  color: var(--gold);
+  margin-bottom: 1.25rem;
+  text-transform: uppercase;
+  font-family: 'Poppins', sans-serif;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ab-hero-kicker::after {
+  content: '';
+  flex: 0 0 40px;
+  height: 1.5px;
+  background: var(--gold);
+  opacity: 0.6;
+}
+
+.ab-hero-title {
+  font-size: clamp(2.4rem, 4.5vw, 3.8rem);
+  font-weight: 800;
+  color: #ffffff;
+  line-height: 1.08;
+  letter-spacing: -1px;
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-hero-title em {
+  color: var(--gold);
+  font-style: normal;
+}
+
+.ab-hero-subtitle {
+  font-size: 1.1rem;
+  font-weight: 300;
+  color: rgba(232, 220, 200, 0.85);
+  margin: 0.5rem 0 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-hero-desc {
+  font-size: 1rem;
+  font-weight: 300;
+  color: rgba(232, 220, 200, 0.65);
+  line-height: 1.85;
+  max-width: 540px;
+  margin: 0 0 2.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-hero-btns {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── Hero Orbital Decorative Graphic ── */
+.ab-hero-deco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-hero-orb-wrap {
+  position: relative;
+  width: 360px;
+  height: 360px;
+}
+
+.ab-hero-orb {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(200, 167, 94, 0.25);
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ab-hero-orb--ring1 {
+  width: 340px;
+  height: 340px;
+  border-color: rgba(200, 167, 94, 0.12);
+  animation: ab-orb-spin 28s linear infinite;
+}
+
+.ab-hero-orb--ring2 {
+  width: 240px;
+  height: 240px;
+  border-color: rgba(200, 167, 94, 0.2);
+  animation: ab-orb-spin 18s linear infinite reverse;
+}
+
+.ab-hero-orb--ring3 {
+  width: 140px;
+  height: 140px;
+  border-color: rgba(200, 167, 94, 0.3);
+  animation: ab-orb-spin 12s linear infinite;
+}
+
+@keyframes ab-orb-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+.ab-hero-orb-core {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(200, 167, 94, 0.18) 0%, rgba(200, 167, 94, 0.05) 100%);
+  border: 1.5px solid rgba(200, 167, 94, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 40px rgba(200, 167, 94, 0.2);
+  z-index: 3;
+}
+
+/* Orbiting dots */
+.ab-hero-orb-dot {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(19, 28, 48, 0.9);
+  border: 1px solid rgba(200, 167, 94, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  top: 50%;
+  left: 50%;
+  z-index: 4;
+}
+
+.ab-hero-orb-dot--1 {
+  transform: translate(-50%, -50%) translate(170px, 0);
+  animation: ab-dot-orbit1 28s linear infinite;
+}
+.ab-hero-orb-dot--2 {
+  transform: translate(-50%, -50%) translate(-170px, 0);
+  animation: ab-dot-orbit2 28s linear infinite;
+}
+.ab-hero-orb-dot--3 {
+  transform: translate(-50%, -50%) translate(0, 120px);
+  animation: ab-dot-orbit3 18s linear infinite;
+}
+.ab-hero-orb-dot--4 {
+  transform: translate(-50%, -50%) translate(0, -120px);
+  animation: ab-dot-orbit4 18s linear infinite;
+}
+
+@keyframes ab-dot-orbit1 {
+  from { transform: translate(-50%, -50%) rotate(0deg) translateX(170px); }
+  to   { transform: translate(-50%, -50%) rotate(360deg) translateX(170px); }
+}
+@keyframes ab-dot-orbit2 {
+  from { transform: translate(-50%, -50%) rotate(180deg) translateX(170px); }
+  to   { transform: translate(-50%, -50%) rotate(540deg) translateX(170px); }
+}
+@keyframes ab-dot-orbit3 {
+  from { transform: translate(-50%, -50%) rotate(90deg) translateX(120px); }
+  to   { transform: translate(-50%, -50%) rotate(450deg) translateX(120px); }
+}
+@keyframes ab-dot-orbit4 {
+  from { transform: translate(-50%, -50%) rotate(270deg) translateX(120px); }
+  to   { transform: translate(-50%, -50%) rotate(630deg) translateX(120px); }
+}
+
+.ab-breadcrumb {
+  display: none;
+}
+
+/* ── SECTION 2: OUR STORY ─────────────────────────────────── */
+
+.ab-story {
+  background: var(--beige-warm);
+  padding: 90px 5%;
+  position: relative;
+}
+
+.ab-story::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 5%;
+  right: 5%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(200, 167, 94, 0.2), transparent);
+}
+
+.ab-story-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 55% 45%;
+  gap: 4rem;
+  align-items: center;
+}
+
+.ab-story-text {
+  padding-right: 2rem;
+}
+
+.ab-story-title {
+  font-size: clamp(1.9rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.15;
+}
+
+.ab-story-body {
+  font-size: 1.02rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin: 0 0 1.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-story-quote {
+  border-left: 3px solid var(--gold);
+  padding: 0.5rem 0 0.5rem 1.5rem;
+  margin: 1.5rem 0 0;
+}
+
+.ab-story-quote p {
+  font-style: italic;
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: var(--navy-light);
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Decorative spine */
+.ab-story-deco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-story-spine {
+  position: relative;
+  height: 320px;
+  width: 120px;
+  margin: 0 auto;
+}
+
+.ab-story-spine-line {
+  position: absolute;
+  left: 50%;
+  top: 10%;
+  bottom: 10%;
+  width: 2px;
+  background: linear-gradient(to bottom, transparent, var(--gold) 10%, var(--gold) 90%, transparent);
+  transform: translateX(-50%);
+}
+
+.ab-story-milestone {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.ab-story-milestone:nth-child(2) { top: 5%; }
+.ab-story-milestone:nth-child(3) { top: 42%; }
+.ab-story-milestone:nth-child(4) { top: 79%; }
+
+.ab-story-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 4px rgba(200, 167, 94, 0.2);
+}
+
+.ab-story-yr {
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+  background: var(--gold);
+  padding: 2px 8px;
+  border-radius: 50px;
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── SECTION 3: WHY WE STARTED ───────────────────────────── */
+
+.ab-why {
+  background: var(--beige-light);
+  padding: 90px 5%;
+}
+
+.ab-why-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 45% 55%;
+  gap: 4rem;
+  align-items: center;
+}
+
+/* Premium icon cluster — replaces colorful emoji cards */
+.ab-why-deco {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ab-why-shapes {
+  position: relative;
+  width: 300px;
+  height: 320px;
+  margin: 0 auto;
+}
+
+/* Navy/gold monochromatic premium shapes */
+.ab-why-shape {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+}
+
+.ab-why-shape--1 {
+  width: 130px;
+  height: 130px;
+  background: var(--navy-dark);
+  border: 1px solid rgba(200, 167, 94, 0.4);
+  box-shadow: 0 16px 48px rgba(10, 18, 35, 0.28), inset 0 1px 0 rgba(200,167,94,0.12);
+  top: 0;
+  left: 10%;
+  transform: rotate(-6deg);
+  animation: ab-float-1 5s ease-in-out infinite;
+}
+
+.ab-why-shape--2 {
+  width: 110px;
+  height: 110px;
+  background: rgba(200, 167, 94, 0.1);
+  border: 1.5px solid rgba(200, 167, 94, 0.5);
+  box-shadow: 0 12px 36px rgba(200, 167, 94, 0.12);
+  top: 10%;
+  right: 0;
+  transform: rotate(5deg);
+  animation: ab-float-2 6s ease-in-out infinite;
+}
+
+.ab-why-shape--3 {
+  width: 120px;
+  height: 120px;
+  background: var(--navy);
+  border: 1px solid rgba(200, 167, 94, 0.3);
+  box-shadow: 0 12px 40px rgba(10, 18, 35, 0.22), inset 0 1px 0 rgba(200,167,94,0.08);
+  bottom: 5%;
+  left: 25%;
+  transform: rotate(3deg);
+  animation: ab-float-3 7s ease-in-out infinite;
+}
+
+/* 4th accent tile */
+.ab-why-center {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(200,167,94,0.18) 0%, rgba(200,167,94,0.06) 100%);
+  border: 1.5px solid rgba(200, 167, 94, 0.55);
+  box-shadow: 0 8px 28px rgba(200, 167, 94, 0.15);
+  bottom: 25%;
+  right: 5%;
+  transform: rotate(-4deg);
+  animation: ab-float-4 4.5s ease-in-out infinite;
+}
+
+@keyframes ab-float-1 {
+  0%, 100% { transform: rotate(-6deg) translateY(0); }
+  50%       { transform: rotate(-6deg) translateY(-10px); }
+}
+@keyframes ab-float-2 {
+  0%, 100% { transform: rotate(5deg) translateY(0); }
+  50%       { transform: rotate(5deg) translateY(-14px); }
+}
+@keyframes ab-float-3 {
+  0%, 100% { transform: rotate(3deg) translateY(0); }
+  50%       { transform: rotate(3deg) translateY(-8px); }
+}
+@keyframes ab-float-4 {
+  0%, 100% { transform: rotate(-4deg) translateY(0); }
+  50%       { transform: rotate(-4deg) translateY(-12px); }
+}
+
+.ab-why-title {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.15;
+}
+
+.ab-why-body {
+  font-size: 1rem;
+  font-weight: 300;
+  line-height: 1.9;
+  color: var(--text-muted);
+  margin: 0 0 1.75rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-why-points {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.ab-why-point {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 0.95rem;
+  font-weight: 400;
+  color: var(--navy);
+  font-family: 'Poppins', sans-serif;
+  line-height: 1.5;
+}
+
+.ab-why-point svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── SECTION 4: MISSION & VISION ─────────────────────────── */
+
+.ab-mv {
+  background: var(--navy);
+  padding: 90px 5%;
+}
+
+.ab-mv-grid {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2rem;
+}
+
+.ab-mv-card {
+  border-radius: var(--radius-lg);
+  padding: 2.5rem 2.25rem;
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+}
+
+.ab-mv-card:hover {
+  transform: translateY(-4px);
+}
+
+.ab-mv-card--light {
+  background: #ffffff;
+  box-shadow: var(--shadow-lg);
+}
+
+.ab-mv-card--dark {
+  background: var(--navy-mid);
+  border: 1px solid rgba(200, 167, 94, 0.15);
+}
+
+.ab-mv-icon-wrap {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: rgba(200, 167, 94, 0.12);
+  border: 1px solid rgba(200, 167, 94, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.ab-mv-icon-wrap--dark {
+  background: rgba(200, 167, 94, 0.08);
+}
+
+.ab-mv-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--navy-dark);
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-mv-title--light {
+  color: var(--beige);
+}
+
+.ab-mv-body {
+  font-size: 0.96rem;
+  font-weight: 300;
+  line-height: 1.8;
+  color: var(--text-muted);
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-mv-body--light {
+  color: rgba(232, 220, 200, 0.65);
+}
+
+/* ── SECTION 5: PHILOSOPHY ───────────────────────────────── */
+
+.ab-philosophy {
+  background: var(--navy-dark);
+  padding: 90px 5%;
+  text-align: center;
+}
+
+.ab-phil-title {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--beige);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-phil-quote {
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.1rem;
+  line-height: 2;
+  color: rgba(232, 220, 200, 0.75);
+  max-width: 720px;
+  margin: 0 auto 3rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-phil-pillars {
+  max-width: 1000px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.ab-phil-pillar {
+  background: var(--navy-mid);
+  border: 1px solid rgba(200, 167, 94, 0.15);
+  border-radius: var(--radius-md);
+  padding: 2rem 1.75rem;
+  text-align: left;
+  transition: var(--transition);
+}
+
+.ab-phil-pillar:hover {
+  border-color: rgba(200, 167, 94, 0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 8px 32px rgba(200, 167, 94, 0.08);
+}
+
+.ab-phil-pillar-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(200, 167, 94, 0.1);
+  border: 1px solid rgba(200, 167, 94, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.ab-phil-pillar-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--beige);
+  margin: 0 0 0.65rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-phil-pillar-text {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: rgba(232, 220, 200, 0.6);
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── SECTION 6: WHAT DRIVES US ───────────────────────────── */
+
+.ab-drives {
+  background: var(--beige-light);
+  padding: 90px 5%;
+  text-align: center;
+}
+
+.ab-drives-title {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-drives-sub {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-drives-grid {
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.5rem;
+}
+
+.ab-drive-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  text-align: left;
+  border-bottom: 3px solid transparent;
+  box-shadow: var(--shadow-sm);
+  transition: var(--transition);
+  cursor: default;
+}
+
+.ab-drive-card:hover {
+  border-bottom-color: var(--gold);
+  box-shadow: var(--shadow-md);
+}
+
+.ab-drive-card--alt {
+  background: var(--navy-dark);
+}
+
+.ab-drive-card--alt .ab-drive-name {
+  color: var(--beige);
+}
+
+.ab-drive-card--alt .ab-drive-short {
+  color: rgba(232, 220, 200, 0.6);
+}
+
+.ab-drive-icon-box {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: rgba(200, 167, 94, 0.12);
+  border: 1px solid rgba(200, 167, 94, 0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1rem;
+  color: var(--gold);
+}
+
+.ab-drive-icon-box--alt {
+  background: rgba(200, 167, 94, 0.08);
+}
+
+.ab-drive-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-drive-short {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── SECTION 7: CORE VALUES ──────────────────────────────── */
+
+.ab-values {
+  background: var(--beige-warm);
+  padding: 90px 5%;
+  text-align: center;
+}
+
+.ab-values-title {
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-values-grid {
+  max-width: 1100px;
+  margin: 2.5rem auto 0;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+
+.ab-value-card {
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 1.75rem;
+  border-top: 3px solid var(--gold);
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  transition: var(--transition);
+  cursor: default;
+}
+
+.ab-value-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.ab-value-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 11px;
+  background: rgba(200, 167, 94, 0.1);
+  border: 1px solid rgba(200, 167, 94, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.85rem;
+}
+
+.ab-value-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-value-short {
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-value-long {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.7;
+  margin: 0.75rem 0 0;
+  font-family: 'Poppins', sans-serif;
+  opacity: 0.8;
+}
+
+/* ── SECTION 8: TIMELINE ─────────────────────────────────── */
+
+.ab-timeline {
+  background: var(--navy-dark);
+  padding: 90px 5%;
+  text-align: center;
+}
+
+.ab-tl-heading {
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  font-weight: 700;
+  color: var(--beige);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.5px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-sub {
+  font-size: 0.95rem;
+  font-weight: 300;
+  color: rgba(232, 220, 200, 0.55);
+  margin: 0 0 0.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-spine {
+  position: relative;
+  max-width: 800px;
+  margin: 3rem auto 0;
+  padding: 0 1rem;
+}
+
+.ab-tl-center-line {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: rgba(200, 167, 94, 0.25);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+/* Timeline items */
+.ab-tl-item {
+  position: relative;
+  display: flex;
+  margin-bottom: 2.5rem;
+  align-items: flex-start;
+}
+
+.ab-tl-item--left  { flex-direction: row; }
+.ab-tl-item--right { flex-direction: row-reverse; }
+
+/* Dot */
+.ab-tl-dot {
+  position: absolute;
+  left: 50%;
+  top: 1.5rem;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--gold);
+  z-index: 2;
+  flex-shrink: 0;
+  box-shadow: 0 0 0 4px rgba(200, 167, 94, 0.2);
+  animation: ab-tl-pulse 3s infinite;
+}
+
+@keyframes ab-tl-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(200, 167, 94, 0.2); }
+  50%       { box-shadow: 0 0 0 8px rgba(200, 167, 94, 0.08); }
+}
+
+/* Card */
+.ab-tl-card {
+  width: calc(50% - 40px);
+  background: #ffffff;
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.75rem;
+  box-shadow: var(--shadow-sm);
+  text-align: left;
+  border: 1px solid rgba(200, 167, 94, 0);
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.ab-tl-item--left  .ab-tl-card { margin-right: auto; }
+.ab-tl-item--right .ab-tl-card { margin-left: auto; }
+
+.ab-tl-card--open {
+  border-color: rgba(200, 167, 94, 0.35);
+  box-shadow: var(--shadow-md);
+}
+
+.ab-tl-year {
+  display: inline-block;
+  background: var(--navy-dark);
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+  padding: 3px 12px;
+  border-radius: 50px;
+  margin-bottom: 0.65rem;
+  font-family: 'Poppins', sans-serif;
+  letter-spacing: 0.04em;
+}
+
+/* Premium icon container replacing emoji */
+.ab-tl-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: rgba(200, 167, 94, 0.1);
+  border: 1px solid rgba(200, 167, 94, 0.22);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.65rem;
+}
+
+.ab-tl-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.5rem;
+  line-height: 1.3;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-short {
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-more {
+  overflow: hidden;
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.45s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+}
+
+.ab-tl-more--open {
+  max-height: 600px;
+  opacity: 1;
+}
+
+.ab-tl-long {
+  font-size: 0.875rem;
+  font-weight: 300;
+  color: var(--text-muted);
+  line-height: 1.75;
+  margin: 0.85rem 0 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--gold);
+  padding: 0.5rem 0 0;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  transition: color 0.2s ease;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-tl-toggle:hover {
+  color: var(--gold-light);
+}
+
+/* ── SECTION 9: CTA ──────────────────────────────────────── */
+
+.ab-cta {
+  background: var(--navy);
+  padding: 100px 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.ab-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 60% at 50% 50%, rgba(200, 167, 94, 0.06) 0%, transparent 65%),
+    radial-gradient(ellipse 40% 40% at 80% 20%, rgba(46, 66, 102, 0.4) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.ab-cta > * { position: relative; z-index: 1; }
+
+.ab-cta-title {
+  font-size: clamp(2rem, 4.5vw, 3.2rem);
+  font-weight: 800;
+  color: var(--beige);
+  margin: 0 0 0.5rem;
+  letter-spacing: -0.75px;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-cta-body {
+  font-size: 1.05rem;
+  font-weight: 300;
+  color: rgba(232, 220, 200, 0.65);
+  line-height: 1.85;
+  max-width: 600px;
+  margin: 0 auto 2.5rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.ab-cta-btns {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ── Responsive ──────────────────────────────────────────── */
+
+@media (max-width: 900px) {
+  .ab-hero-inner {
+    grid-template-columns: 1fr;
+    text-align: center;
+    padding-bottom: 80px;
+  }
+  .ab-hero-deco { display: none; }
+  .ab-hero-kicker { justify-content: center; }
+  .ab-hero-btns { justify-content: center; }
+  .ab-hero-desc { margin: 0 auto 2.5rem; }
+  .ab-divider { margin: 1.25rem auto; }
+
+  .ab-story-inner,
+  .ab-why-inner {
+    grid-template-columns: 1fr;
+    gap: 3rem;
+  }
+  .ab-story-text { padding-right: 0; }
+  .ab-story-deco { display: none; }
+  .ab-why-deco   { display: none; }
+
+  .ab-mv-grid        { grid-template-columns: 1fr; }
+  .ab-phil-pillars   { grid-template-columns: 1fr 1fr; }
+  .ab-drives-grid    { grid-template-columns: 1fr 1fr; }
+  .ab-values-grid    { grid-template-columns: 1fr 1fr; }
+}
+
+@media (max-width: 640px) {
+  .ab-hero    { padding: 120px 6% 70px; }
+  .ab-story,
+  .ab-why,
+  .ab-mv,
+  .ab-philosophy,
+  .ab-drives,
+  .ab-values,
+  .ab-timeline,
+  .ab-cta     { padding: 70px 6%; }
+
+  .ab-phil-pillars { grid-template-columns: 1fr; }
+  .ab-drives-grid  { grid-template-columns: 1fr; }
+  .ab-values-grid  { grid-template-columns: 1fr; }
+
+  /* Mobile timeline: single column */
+  .ab-tl-center-line { left: 16px; transform: none; }
+  .ab-tl-item        { flex-direction: column !important; padding-left: 46px; }
+  .ab-tl-dot         { left: 0; transform: none; top: 1.25rem; }
+  .ab-tl-card        { width: 100%; margin: 0 !important; }
+}

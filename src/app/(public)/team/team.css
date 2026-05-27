@@ -1,0 +1,754 @@
+/* ═══════════════════════════════════════════════════════════
+   TEAM PAGE — team.css
+   YouthVerse Union · Navy/Beige/Gold design system
+═══════════════════════════════════════════════════════════ */
+
+/* ── Keyframes ────────────────────────────────────────────── */
+@keyframes tmFadeUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+@keyframes tmBounce {
+  0%, 100% { transform: translateY(0);   }
+  50%       { transform: translateY(8px); }
+}
+
+@keyframes tmStarPulse {
+  0%, 100% { opacity: 0.55; }
+  50%       { opacity: 1;    }
+}
+
+/* ── Shared container ─────────────────────────────────────── */
+.tm-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 5%;
+}
+
+/* ══════════════════════════════════════════════════════════
+   HERO  — tightened top, removed badge, no scroll icon,
+           gradient fade into beige section below
+══════════════════════════════════════════════════════════ */
+.tm-hero {
+  background: linear-gradient(
+    180deg,
+    #0d1124 0%,
+    #141929 40%,
+    #1a2035 65%,
+    #2a3050 82%,
+    #ede8df 100%
+  );
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 5% 0;
+  position: relative;
+  overflow: visible;
+  min-height: 320px;
+  margin-bottom: 0;
+}
+
+/* Starfield dots — fade to transparent in the bottom 30% so they
+   don't show on top of the beige bleed from ::after */
+.tm-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%, rgba(255,255,255,0.55) 0%, transparent 100%),
+    radial-gradient(1px 1px at 28% 72%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 43% 35%, rgba(255,255,255,0.45) 0%, transparent 100%),
+    radial-gradient(1px 1px at 58% 85%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 20%, rgba(255,255,255,0.50) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 82% 60%, rgba(255,255,255,0.40) 0%, transparent 100%),
+    radial-gradient(1px 1px at 91% 38%, rgba(255,255,255,0.35) 0%, transparent 100%),
+    radial-gradient(1px 1px at 6%  52%, rgba(255,255,255,0.30) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 90%, rgba(255,255,255,0.25) 0%, transparent 100%),
+    radial-gradient(1px 1px at 64% 48%, rgba(200,167,94,0.25) 0%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  mask-image:         linear-gradient(to bottom, black 60%, transparent 100%);
+  pointer-events: none;
+  animation: tmStarPulse 6s ease-in-out infinite;
+  z-index: 0;
+}
+
+/* Subtle gold glow only — the hero bg itself now handles the colour fade */
+.tm-hero::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: -140px;
+  background:
+    radial-gradient(ellipse at 70% 35%, rgba(200,167,94,0.07) 0%, transparent 55%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.tm-hero-inner {
+  position: relative;
+  z-index: 1;
+  max-width: 700px;
+  margin: 0 auto;
+  animation: tmFadeUp 0.8s both;
+  /* extra bottom padding so the text doesn't sit right at the gradient edge */
+  padding-bottom: 30px;
+}
+
+/* Badge — hidden now */
+.tm-hero-badge {
+  display: none;
+}
+
+.tm-hero-title {
+  font-size: clamp(2.8rem, 6vw, 4.5rem);
+  font-weight: 800;
+  color: #fff;
+  letter-spacing: -1.5px;
+  line-height: 1.08;
+  margin: 0 0 1.25rem;
+}
+
+.tm-hero-desc {
+  font-size: 1.05rem;
+  font-weight: 400;
+  color: rgba(232,220,200,0.72);
+  line-height: 1.75;
+  max-width: 620px;
+  margin: 0 auto 0;
+}
+
+/* Scroll indicator — hidden */
+.tm-hero-scroll {
+  display: none;
+}
+
+/* ══════════════════════════════════════════════════════════
+   TEAM SECTIONS
+══════════════════════════════════════════════════════════ */
+.tm-section {
+  background: #ede8df;
+  padding: 100px 5% 80px;
+}
+
+.tm-section-alt {
+  background: linear-gradient(
+    to bottom,
+    var(--beige-warm) 0%,
+    var(--beige-warm) 75%,
+    #2a2f55 100%    /* starts dissolving into navy CTA */
+  );
+}
+
+/* Section header */
+.tm-section-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.tm-section-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--navy);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 1.25rem;
+  box-shadow: var(--shadow-sm);
+}
+
+.tm-section-icon-gold {
+  background: linear-gradient(135deg, var(--gold-dark), var(--gold));
+}
+
+.tm-section-title {
+  font-size: clamp(1.8rem, 4vw, 2.4rem);
+  font-weight: 700;
+  color: var(--navy);
+  margin: 0 0 0.75rem;
+  letter-spacing: -0.5px;
+}
+
+.tm-section-sub {
+  font-size: 1rem;
+  color: var(--text-muted);
+  max-width: 480px;
+  margin: 0 auto;
+  line-height: 1.7;
+}
+
+/* ── Member Grid ──────────────────────────────────────────── */
+.tm-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+/* ══════════════════════════════════════════════════════════
+   MEMBER CARD  — "Shodwe Tech" style
+   • Tall portrait card
+   • Full-bleed photo on top ~65% of card
+   • White pill at bottom with role (bold) + name (small)
+   • Gold crown badge top-right
+   • Rounded corners, soft shadow
+══════════════════════════════════════════════════════════ */
+.tm-card {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity  0.5s var(--stagger, 0ms) ease,
+    transform 0.5s var(--stagger, 0ms) ease,
+    box-shadow 0.3s ease;
+  will-change: transform, opacity;
+  /* tall portrait aspect ratio */
+  aspect-ratio: 3 / 4;
+  background: #c8c8c8;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+}
+
+.tm-card-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.tm-card:hover {
+  box-shadow: 0 10px 40px rgba(0,0,0,0.22);
+  transform: translateY(-4px) !important;
+}
+
+.tm-card:focus-visible {
+  outline: 3px solid var(--gold);
+  outline-offset: 3px;
+}
+
+/* ── Photo fills whole card ── */
+.tm-card-img-wrap {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  margin: 0;
+  box-shadow: none;
+  overflow: hidden;
+}
+
+.tm-card-img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
+}
+
+/* Initials avatar fills card when no photo */
+.tm-initials-avatar {
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 0;
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-light) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 4rem;
+  font-weight: 900;
+  color: var(--gold-light);
+  letter-spacing: 0.05em;
+}
+
+/* Crown badge removed */
+
+/* ── White pill label at bottom ── */
+.tm-card-label {
+  position: absolute;
+  bottom: 14px;
+  left: 12px;
+  right: 12px;
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 10px;
+  padding: 10px 14px 9px;
+  z-index: 5;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+}
+
+.tm-card-role {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  line-height: 1.2;
+  margin: 0 0 2px;
+}
+
+.tm-card-name {
+  font-size: 0.72rem;
+  font-weight: 400;
+  color: #555;
+  margin: 0;
+  line-height: 1.2;
+}
+
+/* Hide old card text elements not in the label */
+.tm-card-country,
+.tm-card-link {
+  display: none;
+}
+
+/* ── Empty ────────────────────────────────────────────────── */
+.tm-empty {
+  text-align: center;
+  padding: 5rem 2rem;
+  color: var(--text-muted);
+}
+
+.tm-empty-icon {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.tm-empty-text {
+  font-size: 1rem;
+  font-weight: 500;
+}
+
+/* ══════════════════════════════════════════════════════════
+   CTA
+══════════════════════════════════════════════════════════ */
+.tm-cta {
+  background: var(--navy);
+  padding: 80px 5%;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+.tm-cta::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 50% 100%, rgba(200,167,94,0.15) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.tm-container {
+  position: relative;
+}
+
+.tm-cta-title {
+  font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+  font-weight: 900;
+  color: #fff;
+  margin: 0 0 1rem;
+  position: relative;
+  letter-spacing: -0.5px;
+}
+
+.tm-cta-desc {
+  font-size: 1.05rem;
+  color: rgba(255,255,255,0.7);
+  max-width: 500px;
+  margin: 0 auto 2.5rem;
+  line-height: 1.75;
+  position: relative;
+}
+
+.tm-cta-actions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.tm-cta-btn {
+  display: inline-block;
+  padding: 0.9rem 2.4rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: var(--transition);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Shimmer sweep */
+.tm-cta-btn::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  transform: skewX(-20deg);
+  transition: left 0.5s ease;
+}
+
+.tm-cta-btn:hover::after {
+  left: 160%;
+}
+
+.tm-cta-btn-primary {
+  background: var(--gold);
+  color: var(--navy-dark);
+}
+
+.tm-cta-btn-primary:hover {
+  background: var(--gold-light);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-gold);
+}
+
+.tm-cta-btn-ghost {
+  background: transparent;
+  color: rgba(255,255,255,0.85);
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+
+.tm-cta-btn-ghost:hover {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.5);
+  transform: translateY(-2px);
+}
+
+/* ══════════════════════════════════════════════════════════
+   PROFILE MODAL  — "Anna Brenner / Mellene" style
+   Fixed-height card, no internal scroll, 45% photo top
+══════════════════════════════════════════════════════════ */
+
+@keyframes tmModalIn {
+  from { opacity: 0; transform: scale(0.94); }
+  to   { opacity: 1; transform: scale(1);    }
+}
+
+@keyframes tmOverlayIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Overlay */
+.tm-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  pointer-events: none;
+  padding: 1.5rem;
+  /* overlay fades in via class toggle */
+  transition: opacity 0.25s ease;
+}
+
+.tm-modal-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* Card shell — fixed flex column, no scroll */
+.tm-modal {
+  background: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 380px;
+  /* Fixed height: tall enough for content, no scrolling */
+  height: auto;
+  max-height: 94vh;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.28);
+  position: relative;
+  animation: tmModalIn 0.3s ease both;
+  text-align: left;
+  /* Flex column: photo fixed top, content fills rest */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Close button */
+.tm-modal-close {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.15);
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  transition: background 0.2s;
+  z-index: 20;
+}
+
+.tm-modal-close:hover { background: rgba(0,0,0,0.3); }
+
+/* ── Photo — auto height so full image always shows ── */
+.tm-modal-photo {
+  flex: 0 0 auto;
+  width: 100%;
+  overflow: hidden;
+  background: #1a1a1a;
+  position: relative;
+}
+
+.tm-modal-photo img,
+.tm-modal-photo .tm-modal-img {
+  width: 100%;
+  height: auto;
+  display: block;
+  object-fit: unset;
+}
+
+/* Initials fallback in modal */
+.tm-modal-photo .tm-modal-initials {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(160deg, #1a1a2e 0%, #2d3561 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #c8a75e;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Content section — grows to fit content ── */
+.tm-modal-content {
+  flex: 1;
+  overflow: visible;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Name / role block ── */
+.tm-modal-identity {
+  background: #f5f5f3;
+  padding: 1.25rem 1.5rem 0.75rem;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.tm-modal-name-wrap {
+  position: relative;
+  display: inline-block;
+  padding-right: 1.5rem;
+}
+
+.tm-modal-name-accent {
+  position: absolute;
+  left: -4px;
+  top: 0;
+  width: 60%;
+  height: 100%;
+  background: #e8e5e0;
+  z-index: 0;
+}
+
+.tm-modal-name {
+  position: relative;
+  z-index: 1;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: #111;
+  margin: 0;
+  line-height: 1.15;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Small navy square before role text */
+.tm-modal-name-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  background: #1a1a2e;
+  margin-right: 8px;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+
+/* Role — small uppercase spaced */
+.tm-modal-role-wrap {
+  margin-top: 4px;
+}
+
+.tm-modal-role {
+  display: flex;
+  align-items: center;
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #888;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* Country in identity block */
+.tm-modal-country {
+  font-size: 0.78rem;
+  color: #aaa;
+  margin: 4px 0 0;
+  font-weight: 400;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* ── Bio section ── */
+.tm-modal-body {
+  padding: 1rem 1.5rem;
+  flex: 1;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Thin divider above hello */
+.tm-modal-divider {
+  height: 1px;
+  background: #eee;
+  margin: 0 0 0.75rem;
+  flex-shrink: 0;
+}
+
+.tm-modal-hello {
+  font-size: 1.1rem;
+  font-style: italic;
+  font-weight: 400;
+  color: #333;
+  margin: 0 0 0.4rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  flex-shrink: 0;
+}
+
+.tm-modal-bio {
+  font-size: 0.82rem;
+  font-weight: 300;
+  color: #888;
+  line-height: 1.6;
+  margin: 0;
+  font-family: 'Poppins', sans-serif;
+  overflow: visible;
+  word-break: break-word;
+  white-space: normal;
+  flex-shrink: 0;
+}
+
+.tm-modal-location {
+  font-size: 0.78rem;
+  color: #aaa;
+  margin: 0.5rem 0 0;
+  font-family: 'Poppins', sans-serif;
+  flex-shrink: 0;
+}
+
+/* ── Social grid — 2-column ── */
+.tm-modal-social-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem 1rem;
+  border-top: 1px solid #eee;
+  margin-top: auto;
+  flex-shrink: 0;
+}
+
+.tm-modal-social-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: #555;
+  font-size: 0.82rem;
+  font-weight: 500;
+  font-family: 'Poppins', sans-serif;
+  white-space: nowrap;
+  transition: color 0.15s;
+}
+
+.tm-modal-social-item:hover { color: #111; }
+
+.tm-modal-social-item.full-width {
+  grid-column: 1 / -1;
+}
+
+.tm-modal-social-no-links {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: 0.78rem;
+  color: #bbb;
+  font-family: 'Poppins', sans-serif;
+  padding: 0.25rem 0;
+}
+
+/* ── Hide old modal classes still referenced in JSX ── */
+.tm-modal-connect-label,
+.tm-modal-links,
+.tm-modal-link,
+.tm-modal-link-left,
+.tm-modal-ext,
+.tm-modal-no-links,
+.tm-modal-img {
+  display: none !important;
+}
+
+/* ══════════════════════════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════════════════════════ */
+@media (max-width: 1200px) {
+  .tm-grid { grid-template-columns: repeat(4, 1fr); }
+}
+
+@media (max-width: 1024px) {
+  .tm-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (max-width: 768px) {
+  .tm-hero {
+    padding: 70px 5% 0;
+    min-height: 340px;
+  }
+
+  .tm-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .tm-section,
+  .tm-section-alt { padding: 60px 5%; }
+
+  .tm-cta { padding: 60px 5%; }
+}
+
+@media (max-width: 480px) {
+  .tm-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+
+  .tm-hero-title { letter-spacing: -0.5px; }
+
+  .tm-cta-actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tm-modal { max-width: 100%; border-radius: 12px 12px 0 0; }
+}
