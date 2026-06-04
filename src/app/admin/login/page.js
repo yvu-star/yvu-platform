@@ -2,21 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createBrowserClient } from '@supabase/ssr'
+import { createClient } from '@/lib/supabase/client'
 import { logActivity } from '@/lib/services/activity.service'
-
-function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    {
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
-    }
-  )
-}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -93,7 +80,6 @@ export default function LoginPage() {
             <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
               Email
             </label>
-            {/* Render a dummy readonly input first, swap to real one after mount */}
             {mounted ? (
               <input
                 key="email-real"

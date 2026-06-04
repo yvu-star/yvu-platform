@@ -9,7 +9,9 @@ export async function middleware(request) {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
-        getAll() { return request.cookies.getAll() },
+        getAll() {
+          return request.cookies.getAll()
+        },
         setAll(cookiesToSet) {
           cookiesToSet.forEach(({ name, value }) =>
             request.cookies.set(name, value)
@@ -27,7 +29,7 @@ export async function middleware(request) {
 
   const isLoginPage = request.nextUrl.pathname === '/admin/login'
 
-  // If no user AND not already on login page → redirect to login
+  // No valid session and not already on login → redirect to login
   if (!user && !isLoginPage) {
     const loginUrl = new URL('/admin/login', request.url)
     const redirectResponse = NextResponse.redirect(loginUrl)
@@ -39,7 +41,7 @@ export async function middleware(request) {
     return redirectResponse
   }
 
-  // If user IS logged in and hits /admin/login → send to dashboard
+  // Already logged in and hitting /admin/login → send to dashboard
   if (user && isLoginPage) {
     return NextResponse.redirect(new URL('/admin', request.url))
   }
