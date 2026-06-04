@@ -11,40 +11,39 @@ export async function middleware(request) {
       cookies: {
         getAll() { return request.cookies.getAll() },
         setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) => request.cookies.set(name, value))
+          cookiesToSet.forEach(({ name, value }) =>
+            request.cookies.set(name, value)
+          )
           supabaseResponse = NextResponse.next({ request })
           cookiesToSet.forEach(({ name, value, options }) =>
             supabaseResponse.cookies.set(name, value, options)
           )
         },
       },
-      auth: {
-        persistSession: false,
-        autoRefreshToken: false,
-      },
     }
   )
 
-  // Always verify the session directly — do not rely on cookie name sniffing.
-  // getUser() validates the JWT with Supabase servers; if there's no valid
-  // session it returns null regardless of what cookies exist in the browser.
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    // No valid session — clear any stale auth cookies and redirect to login
+  const isLoginPage = request.nextUrl.pathname === '/admin/login'
+
+  // If no user AND not already on login page → redirect to login
+  if (!user && !isLoginPage) {
     const loginUrl = new URL('/admin/login', request.url)
     const redirectResponse = NextResponse.redirect(loginUrl)
-
     request.cookies.getAll().forEach(({ name }) => {
       if (name.startsWith('sb-')) {
         redirectResponse.cookies.set(name, '', { maxAge: 0, path: '/' })
       }
     })
-
     return redirectResponse
   }
 
-  // Valid session — allow through
+  // If user IS logged in and hits /admin/login → send to dashboard
+  if (user && isLoginPage) {
+    return NextResponse.redirect(new URL('/admin', request.url))
+  }
+
   return supabaseResponse
 }
 
