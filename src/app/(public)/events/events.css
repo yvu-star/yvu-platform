@@ -69,6 +69,23 @@
   align-items: center;
 }
 
+/* Orbital SVG graphic — positioned decoratively in hero */
+.ev-hero-graphic {
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 340px;
+  height: 340px;
+  opacity: 0.7;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .ev-hero-graphic { display: none; }
+}
+
 /* Fade-up keyframes */
 @keyframes ev-fadeup {
   from { opacity: 0; transform: translateY(28px); }

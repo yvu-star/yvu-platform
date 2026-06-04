@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // src/app/team/page.js
 // Server Component — fetches active team members and site settings from Supabase
 
@@ -20,7 +22,7 @@ async function getTeamData() {
       supabase
         .from('team_members')
         .select(
-          'id, name, role, bio, country, team_group, image_url, linkedin_url, facebook_url, instagram_url, portfolio_url, display_order, is_active'
+          'id, name, role, bio, country, team_group, image_url, linkedin_url, facebook_url, instagram_url, portfolio_url, email, display_order, is_active'
         )
         .eq('is_active', true)
         .order('display_order', { ascending: true }),
@@ -69,6 +71,9 @@ export default async function TeamPage() {
         foundingTeam={foundingTeam}
         opsTeam={opsTeam}
         ctaTitle={s.team_cta_title ?? 'Want to Join Our Team?'}
+        heroTitle={s.team_hero_title ?? 'Meet Our Team'}
+        heroContent={s.team_hero_content ?? 'A passionate, global team of young leaders committed to inspiring minds and building a brighter future for youth across South Asia and beyond.'}
+        heroKicker={s.team_hero_kicker ?? 'The People Behind the Mission'}
       />
     </main>
   );

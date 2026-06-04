@@ -75,6 +75,12 @@ function StatCard({ stat, index }) {
           const target = displayValue;
           const num = parseFloat(target.replace(/[^0-9.]/g, '')) || 0;
           const suffix = target.replace(/[0-9.]/g, '');
+          // If there's no numeric part, just show the value as-is
+          if (!num) {
+            numEl.textContent = displayValue;
+            observer.disconnect();
+            return;
+          }
           let startTime = null;
           function step(ts) {
             if (!startTime) startTime = ts;
@@ -195,7 +201,7 @@ function ValueCard({ value, index }) {
       onMouseLeave={handleMouseLeave}
     >
       <div className="hv-value-icon">
-        <LucideIcon name={resolvedIcon} size={26} color="var(--gold)" />
+        <LucideIcon name={resolvedIcon} size={26} color="#c9a84c" />
       </div>
       <h4>{value.name}</h4>
       <p>{value.short_description}</p>
@@ -224,7 +230,7 @@ export default function HomeClient({ settings, statItems, coreValues, upcomingEv
     return () => observer.disconnect();
   }, []);
 
-  /* ── Hero parallax ── */
+  /* ── Hero parallax (mouse) ── */
   useEffect(() => {
     const graphic = heroGraphicRef.current;
     if (!graphic) return;
@@ -237,6 +243,30 @@ export default function HomeClient({ settings, statItems, coreValues, upcomingEv
     }
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
+
+  /* ── Scroll parallax ── */
+  useEffect(() => {
+    function handleScroll() {
+      const scrollY = window.scrollY;
+
+      // Hero right panel (globe graphic) — moves slower than scroll
+      const heroRight = document.querySelector('.hv-hero-right');
+      if (heroRight) {
+        heroRight.style.transform = `translateY(${scrollY * 0.35}px)`;
+      }
+
+      // Decorative watermark/bg elements — very gentle drift
+      document.querySelectorAll('.hv-mv-watermark, .hv-cta-watermark').forEach(el => {
+        const rect = el.getBoundingClientRect();
+        const elemTop = scrollY + rect.top;
+        const offset = (scrollY - elemTop) * 0.15;
+        el.style.transform = `translateY(${offset}px)`;
+      });
+    }
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
   /* ── Data preparation ── */
@@ -446,24 +476,7 @@ export default function HomeClient({ settings, statItems, coreValues, upcomingEv
       )}
 
       {/* ══════════════════════════════════════════════════════
-          SECTION 4 — WHAT DRIVES US
-      ══════════════════════════════════════════════════════ */}
-      <section className="hv-drives-section">
-        <div className="hv-reveal">
-          <span className="hv-section-pill">WHAT DRIVES US</span>
-          <h2 className="hv-section-title">{s.home_drives_title ?? 'What Drives YouthVerse Union'}</h2>
-          <p className="hv-section-sub">{s.home_drives_subtitle ?? 'Fueled by passion, guided by purpose.'}</p>
-        </div>
-
-        <div className="hv-drives-grid">
-          {drives.map((drive, i) => (
-            <DriveCard key={i} drive={drive} index={i} />
-          ))}
-        </div>
-      </section>
-
-      {/* ══════════════════════════════════════════════════════
-          SECTION 5 — MISSION & VISION
+          SECTION 4 — MISSION & VISION
       ══════════════════════════════════════════════════════ */}
       <section className="hv-mv-section">
         <div className="hv-reveal" style={{ textAlign: 'center', marginBottom: '3rem' }}>
@@ -475,29 +488,43 @@ export default function HomeClient({ settings, statItems, coreValues, upcomingEv
 
         <div className="hv-mv-grid">
           {/* Mission */}
-          <div className="hv-mission-card hv-reveal" style={{ transitionDelay: '0ms' }}>
-            <div className="hv-mv-accent" />
-            <div className="hv-mv-icon-wrap">
-              <Target size={32} color="var(--gold)" />
+          <div className="hv-mv-card hv-reveal" style={{ transitionDelay: '0ms' }}>
+            <div className="hv-mv-card-inner">
+              <div className="hv-mv-left">
+                <div className="hv-mv-icon-box">
+                  <Target size={20} color="#c9a84c" />
+                </div>
+                <div className="hv-mv-index" aria-hidden="true">01</div>
+              </div>
+              <div className="hv-mv-right">
+                <span className="hv-mv-badge">Mission</span>
+                <h3 className="hv-mv-title">{s.mission_title ?? 'Our Mission'}</h3>
+                <div className="hv-mv-rule" />
+                <p className="hv-mv-body">
+                  {s.mission_content ?? 'To create a trustworthy and inspiring space where youth can explore their potential through Olympiads, research, learning, and collaborative innovation.'}
+                </p>
+              </div>
             </div>
-            <span className="hv-pill-badge">MISSION</span>
-            <h3 className="hv-mv-card-title">{s.mission_title ?? 'Our Mission'}</h3>
-            <p className="hv-mv-card-text">
-              {s.mission_content ?? 'To empower South Asian youth through research, innovation, and collaboration — building the next generation of impactful leaders.'}
-            </p>
           </div>
 
           {/* Vision */}
-          <div className="hv-vision-card hv-reveal" style={{ transitionDelay: '150ms' }}>
-            <div className="hv-mv-accent-side" />
-            <div className="hv-mv-icon-wrap hv-mv-icon-dark">
-              <Compass size={32} color="var(--gold)" />
+          <div className="hv-mv-card hv-reveal" style={{ transitionDelay: '150ms' }}>
+            <div className="hv-mv-card-inner">
+              <div className="hv-mv-left">
+                <div className="hv-mv-icon-box">
+                  <Compass size={20} color="#c9a84c" />
+                </div>
+                <div className="hv-mv-index" aria-hidden="true">02</div>
+              </div>
+              <div className="hv-mv-right">
+                <span className="hv-mv-badge">Vision</span>
+                <h3 className="hv-mv-title">{s.vision_title ?? 'Our Vision'}</h3>
+                <div className="hv-mv-rule" />
+                <p className="hv-mv-body">
+                  {s.vision_content ?? 'To become South Asia\'s most impactful youth platform; empowering millions to dream fearlessly, learn endlessly and lead purposefully.'}
+                </p>
+              </div>
             </div>
-            <span className="hv-pill-badge hv-pill-badge-dark">VISION</span>
-            <h3 className="hv-mv-card-title" style={{ color: 'var(--beige)' }}>{s.vision_title ?? 'Our Vision'}</h3>
-            <p className="hv-mv-card-text" style={{ color: 'rgba(232,220,200,0.7)' }}>
-              {s.vision_content ?? 'A world where youth voices shape decisions, drive innovation, and lead with integrity across South Asia and beyond.'}
-            </p>
           </div>
         </div>
       </section>

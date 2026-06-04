@@ -20,6 +20,10 @@ export async function createClient() {
           } catch {}
         },
       },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
     }
   )
 }

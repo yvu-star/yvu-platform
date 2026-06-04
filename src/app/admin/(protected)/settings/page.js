@@ -209,6 +209,28 @@ const CONTENT_PAGES = [
       { title: 'CTA Section', prefix: 'contact_cta_', fields: CTA_FIELDS },
     ],
   },
+  {
+    id: 'team',
+    label: 'Team',
+    sections: [
+      {
+        title: 'Hero Section',
+        prefix: 'team_hero_',
+        fields: [
+          { key: 'kicker',  label: 'Eyebrow / Kicker Text' },
+          { key: 'title',   label: 'Title' },
+          { key: 'content', label: 'Content', multiline: true },
+        ],
+      },
+      {
+        title: 'Call-to-Action Section',
+        prefix: 'team_cta_',
+        fields: [
+          { key: 'title', label: 'CTA Title' },
+        ],
+      },
+    ],
+  },
 ];
 
 // ─── Core Values Icon Set ───────────────────────────────────────────────────
@@ -968,11 +990,12 @@ export default function SiteSettingsPage() {
             <div className="sp-card__body">
               <SettingField label="Primary Email" fieldKey="contact_email" value={values['contact_email']} onChange={handleChange} />
               <SettingField label="WhatsApp Number" fieldKey="contact_whatsapp" value={values['contact_whatsapp']} onChange={handleChange} />
+              <SettingField label="Location / Region" fieldKey="contact_location" value={values['contact_location']} onChange={handleChange} />
             </div>
             <div className="sp-card__footer">
               <button
                 className="sp-btn sp-btn--primary"
-                onClick={function () { handleSaveKeys(['contact_email', 'contact_whatsapp'], 'Contact'); }}
+                onClick={function () { handleSaveKeys(['contact_email', 'contact_whatsapp', 'contact_location'], 'Contact'); }}
                 disabled={saving === 'Contact'}
               >
                 {saving === 'Contact' ? <><Loader2 size={14} strokeWidth={2} className="sp-btn__spinner" /> Saving…</> : 'Save Contact Info'}
@@ -1052,11 +1075,13 @@ export default function SiteSettingsPage() {
               <SettingField label="Facebook URL" fieldKey="social_facebook" value={values['social_facebook']} onChange={handleChange} />
               <SettingField label="Instagram URL" fieldKey="social_instagram" value={values['social_instagram']} onChange={handleChange} />
               <SettingField label="LinkedIn URL" fieldKey="social_linkedin" value={values['social_linkedin']} onChange={handleChange} />
+              <SettingField label="WhatsApp Number (for social icon)" fieldKey="social_whatsapp" value={values['social_whatsapp']} onChange={handleChange} />
+              <SettingField label="YouTube Channel URL" fieldKey="social_youtube" value={values['social_youtube']} onChange={handleChange} />
             </div>
             <div className="sp-card__footer">
               <button
                 className="sp-btn sp-btn--primary"
-                onClick={function () { handleSaveKeys(['social_facebook', 'social_instagram', 'social_linkedin'], 'Social'); }}
+                onClick={function () { handleSaveKeys(['social_facebook', 'social_instagram', 'social_linkedin', 'social_whatsapp', 'social_youtube'], 'Social'); }}
                 disabled={saving === 'Social'}
               >
                 {saving === 'Social' ? <><Loader2 size={14} strokeWidth={2} className="sp-btn__spinner" /> Saving…</> : 'Save Social Links'}

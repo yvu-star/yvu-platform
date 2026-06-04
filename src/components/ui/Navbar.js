@@ -73,6 +73,7 @@ export default function Navbar() {
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Toggle menu"
         aria-expanded={menuOpen}
+        style={{ background: 'transparent', border: 'none' }}
       >
         <span />
         <span />

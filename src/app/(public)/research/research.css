@@ -49,6 +49,23 @@
   margin: 0 auto;
 }
 
+/* Atomic SVG graphic — right-side decorative element */
+.rp-hero-graphic {
+  position: absolute;
+  right: 3%;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 340px;
+  height: 340px;
+  opacity: 0.65;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@media (max-width: 900px) {
+  .rp-hero-graphic { display: none; }
+}
+
 .rp-hero-badge {
   display: none;
 }

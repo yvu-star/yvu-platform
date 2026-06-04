@@ -286,6 +286,89 @@ export default function ResearchClient({ settings, research }) {
           </h1>
           {heroDesc && <p className="rp-hero-desc">{heroDesc}</p>}
         </div>
+        {/* Atomic / Data Structure SVG — right-side graphic */}
+        <div className="rp-hero-graphic" aria-hidden="true">
+          <svg viewBox="0 0 600 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <style>{`
+              @keyframes rp-slowSpin {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(360deg); }
+              }
+              @keyframes rp-pulse {
+                0%, 100% { opacity: 0.6; transform: scale(1); }
+                50%       { opacity: 1;   transform: scale(1.15); }
+              }
+              .rp-svg-outer { transform-origin: 300px 300px; animation: rp-slowSpin 60s linear infinite; }
+              .rp-svg-rev   { transform-origin: 300px 300px; animation: rp-slowSpin 40s linear infinite reverse; }
+              .rp-svg-pulse { transform-origin: 300px 300px; animation: rp-pulse 3s ease-in-out infinite; }
+              .rp-svg-orbit1 { transform-origin: 300px 300px; animation: rp-slowSpin 12s linear infinite; }
+              .rp-svg-orbit2 { transform-origin: 300px 300px; animation: rp-slowSpin 18s linear infinite reverse; }
+              .rp-svg-orbit3 { transform-origin: 300px 300px; animation: rp-slowSpin 24s linear infinite; }
+            `}</style>
+
+            {/* Corner crosshair accents */}
+            <g opacity="0.2" stroke="rgba(201,168,76,0.8)" strokeWidth="1">
+              <line x1="55" y1="60" x2="75" y2="60"/><line x1="65" y1="50" x2="65" y2="70"/>
+              <line x1="525" y1="60" x2="545" y2="60"/><line x1="535" y1="50" x2="535" y2="70"/>
+              <line x1="55" y1="540" x2="75" y2="540"/><line x1="65" y1="530" x2="65" y2="550"/>
+              <line x1="525" y1="540" x2="545" y2="540"/><line x1="535" y1="530" x2="535" y2="550"/>
+            </g>
+
+            {/* Outermost ring with tick marks — measurement instrument */}
+            <g className="rp-svg-outer">
+              <circle cx="300" cy="300" r="248" fill="none" stroke="rgba(201,168,76,0.20)" strokeWidth="1.2"/>
+              {Array.from({length: 24}, (_, i) => {
+                const angle = (i * 15) * Math.PI / 180;
+                const isLong = i % 2 === 0;
+                const r1 = 248;
+                const r2 = r1 - (isLong ? 14 : 8);
+                return (
+                  <line
+                    key={i}
+                    x1={300 + Math.cos(angle) * r1}
+                    y1={300 + Math.sin(angle) * r1}
+                    x2={300 + Math.cos(angle) * r2}
+                    y2={300 + Math.sin(angle) * r2}
+                    stroke="rgba(201,168,76,0.25)"
+                    strokeWidth={isLong ? 1.2 : 0.8}
+                  />
+                );
+              })}
+            </g>
+
+            {/* Elliptical orbit 1 — 0deg rotation */}
+            <g className="rp-svg-orbit1">
+              <ellipse cx="300" cy="300" rx="140" ry="60" fill="none" stroke="rgba(201,168,76,0.18)" strokeWidth="0.9"/>
+              <circle cx="440" cy="300" r="4.5" fill="#c9a84c" filter="drop-shadow(0 0 7px rgba(201,168,76,0.7))"/>
+            </g>
+
+            {/* Elliptical orbit 2 — 60deg rotation */}
+            <g className="rp-svg-orbit2" style={{transform: 'rotate(60deg)', transformOrigin: '300px 300px'}}>
+              <ellipse cx="300" cy="300" rx="140" ry="60" fill="none" stroke="rgba(201,168,76,0.16)" strokeWidth="0.9"/>
+              <circle cx="440" cy="300" r="4.5" fill="#c9a84c" filter="drop-shadow(0 0 7px rgba(201,168,76,0.7))"/>
+            </g>
+
+            {/* Elliptical orbit 3 — 120deg rotation */}
+            <g className="rp-svg-orbit3" style={{transform: 'rotate(120deg)', transformOrigin: '300px 300px'}}>
+              <ellipse cx="300" cy="300" rx="140" ry="60" fill="none" stroke="rgba(201,168,76,0.14)" strokeWidth="0.9"/>
+              <circle cx="440" cy="300" r="4.5" fill="#c9a84c" filter="drop-shadow(0 0 7px rgba(201,168,76,0.7))"/>
+            </g>
+
+            {/* Second ring — counter */}
+            <g className="rp-svg-rev">
+              <circle cx="300" cy="300" r="180" fill="none" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8" strokeDasharray="3 9"/>
+            </g>
+
+            {/* Nucleus glow rings */}
+            <circle cx="300" cy="300" r="28" fill="none" stroke="rgba(201,168,76,0.12)" strokeWidth="1"/>
+            <circle cx="300" cy="300" r="16" fill="none" stroke="rgba(201,168,76,0.18)" strokeWidth="0.9"/>
+
+            {/* Nucleus center — pulse */}
+            <g className="rp-svg-pulse">
+              <circle cx="300" cy="300" r="7" fill="#c9a84c" filter="drop-shadow(0 0 12px rgba(201,168,76,0.9))"/>
+            </g>
+          </svg>
+        </div>
       </section>
 
       {/* ── PURPOSE ── */}

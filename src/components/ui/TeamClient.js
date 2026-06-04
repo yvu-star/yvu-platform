@@ -164,6 +164,9 @@ function TeamSection({ members, title, subtitle, icon, altBg, startIndex, visibl
     <section className={'tm-section' + (altBg ? ' tm-section-alt' : '')}>
       <div className="tm-container">
         <div className="tm-section-header">
+          <div className="tm-section-overline">
+            {altBg ? 'Global Operations' : 'Leadership'}
+          </div>
           <div className={'tm-section-icon' + (altBg ? ' tm-section-icon-gold' : '')}>
             {icon}
           </div>
@@ -194,7 +197,7 @@ function TeamSection({ members, title, subtitle, icon, altBg, startIndex, visibl
   );
 }
 
-/* ─── Profile Modal — "Anna Brenner / Mellene" style ─────── */
+/* ─── Profile Modal — redesigned editorial style ──────────── */
 function ProfileModal({ member, onClose }) {
   const isOpen = !!member;
 
@@ -278,7 +281,7 @@ function ProfileModal({ member, onClose }) {
             <X size={14} />
           </button>
 
-          {/* ── Portrait photo — 45% fixed height ── */}
+          {/* ── Portrait photo — left panel ── */}
           <div className="tm-modal-photo">
             {member.image_url
               ? (
@@ -297,48 +300,70 @@ function ProfileModal({ member, onClose }) {
             }
           </div>
 
-          {/* ── Scrollable-free content column ── */}
+          {/* ── Content column ── */}
           <div className="tm-modal-content">
 
-            {/* Identity — beige bg strip */}
-            <div className="tm-modal-identity">
-              <div className="tm-modal-name-wrap">
-                <div className="tm-modal-name-accent" />
-                <h3 className="tm-modal-name">
-                  <span style={{ fontWeight: 900 }}>{firstName}</span>
-                  {restName && <> <span style={{ fontWeight: 400 }}>{restName}</span></>}
-                </h3>
-              </div>
-              <div className="tm-modal-role-wrap">
-                <div className="tm-modal-role">
-                  <span className="tm-modal-name-dot" />
-                  {member.role || 'Team Member'}
-                </div>
-              </div>
+            {/* 1. Name */}
+            <div className="tm-modal-name-wrap">
+              <h3 className="tm-modal-name">
+                <span style={{ fontWeight: 900 }}>{firstName}</span>
+                {restName && <> <span style={{ fontWeight: 400 }}>{restName}</span></>}
+              </h3>
             </div>
 
-            {/* Social grid */}
+            {/* 2. Designation */}
+            <div className="tm-modal-role-wrap">
+              <div className="tm-modal-role">
+                <span className="tm-modal-name-dot" />
+                {member.role || 'Team Member'}
+              </div>
+              {member.country && (
+                <div className="tm-modal-country">{member.country}</div>
+              )}
+            </div>
+
+            {/* 3. Bio */}
+            <div className="tm-modal-body">
+              <p className="tm-modal-bio">
+                {member.bio || 'Passionate team member contributing to YouthVerse Union\'s mission across South Asia.'}
+              </p>
+            </div>
+
+            {/* 4. Email section */}
+            <div className="tm-modal-email-section" />
+
+            {/* 5. Social + email as icon-only buttons */}
             <div className="tm-modal-social-grid">
-              {socialLinks.length > 0
-                ? socialLinks.map((link, idx) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noreferrer"
-                      className={
-                        'tm-modal-social-item' +
-                        (socialLinks.length === 1 || (socialLinks.length % 2 !== 0 && idx === socialLinks.length - 1)
-                          ? ' full-width'
-                          : '')
-                      }
-                    >
-                      {link.icon}
-                      <span>{link.label}</span>
-                    </a>
-                  ))
-                : <span className="tm-modal-social-no-links">No social links available</span>
-              }
+              {/* Email icon first */}
+              <a
+                href={member.email ? `mailto:${member.email}` : undefined}
+                className="tm-modal-email-icon-btn"
+                aria-label={member.email ? `Email ${member.name}` : 'No email available'}
+                title={member.email || 'No email available'}
+                style={!member.email ? { pointerEvents: 'none', opacity: 0.4 } : {}}
+              >
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <rect x="2" y="4" width="20" height="16" rx="2"/>
+                  <path d="M2 7l10 7 10-7"/>
+                </svg>
+              </a>
+              {/* Social icons */}
+              {socialLinks.map((link) => (
+                <a
+                  key={link.label}
+                  href={link.href}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="tm-modal-social-item"
+                  aria-label={link.label}
+                  title={link.label}
+                >
+                  {link.icon}
+                </a>
+              ))}
+              {socialLinks.length === 0 && !member.email && (
+                <span className="tm-modal-social-no-links">No contact info</span>
+              )}
             </div>
 
           </div>{/* /tm-modal-content */}
@@ -353,7 +378,14 @@ function ProfileModal({ member, onClose }) {
 }
 
 /* ─── Main Export ─────────────────────────────────────────── */
-export default function TeamClient({ foundingTeam = [], opsTeam = [], ctaTitle }) {
+export default function TeamClient({
+  foundingTeam = [],
+  opsTeam = [],
+  ctaTitle,
+  heroTitle,
+  heroContent,
+  heroKicker,
+}) {
   const [visibleSet, setVisibleSet] = useState(new Set());
   const [selectedMember, setSelectedMember] = useState(null);
   const cardRefs = useRef([]);
@@ -401,6 +433,93 @@ export default function TeamClient({ foundingTeam = [], opsTeam = [], ctaTitle }
 
   return (
     <>
+      {/* ── HERO SECTION with Org Chart SVG ── */}
+      <section className="tm-hero" aria-label="Team hero">
+        <div className="tm-hero-content">
+          <p className="tm-hero-kicker">{heroKicker ?? 'The People Behind the Mission'}</p>
+          <h1 className="tm-hero-title">
+            {heroTitle
+              ? heroTitle
+              : <>Meet Our <em>Team</em></>
+            }
+          </h1>
+          <p className="tm-hero-desc">
+            {heroContent ?? 'Passionate young leaders and dedicated professionals working across borders to drive lasting change for youth across South Asia and beyond.'}
+          </p>
+        </div>
+        <div className="tm-hero-graphic" aria-hidden="true">
+          <svg viewBox="0 0 600 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+            <style>{`
+              @keyframes tm-slowSpin {
+                from { transform: rotate(0deg); }
+                to   { transform: rotate(360deg); }
+              }
+              @keyframes tm-pulse {
+                0%, 100% { opacity: 0.6; transform: scale(1); }
+                50%       { opacity: 1;   transform: scale(1.15); }
+              }
+              .tm-svg-outer { transform-origin: 300px 300px; animation: tm-slowSpin 60s linear infinite; }
+              .tm-svg-pulse { transform-origin: 300px 300px; animation: tm-pulse 3s ease-in-out infinite; }
+            `}</style>
+
+            {/* Large faint enclosing circle */}
+            <circle cx="300" cy="300" r="265" fill="none" stroke="rgba(201,168,76,0.06)" strokeWidth="1"/>
+
+            {/* Outermost ring — slow spin */}
+            <g className="tm-svg-outer">
+              <circle cx="300" cy="300" r="265" fill="none" stroke="rgba(201,168,76,0.18)" strokeWidth="1"/>
+              <circle cx="300" cy="35" r="3" fill="rgba(201,168,76,0.3)"/>
+              <circle cx="300" cy="565" r="3" fill="rgba(201,168,76,0.3)"/>
+              <circle cx="35" cy="300" r="3" fill="rgba(201,168,76,0.3)"/>
+              <circle cx="565" cy="300" r="3" fill="rgba(201,168,76,0.3)"/>
+            </g>
+
+            {/* Horizontal dashed mid-tier separator */}
+            <line x1="120" y1="210" x2="480" y2="210" stroke="rgba(201,168,76,0.18)" strokeWidth="0.9" strokeDasharray="6 8"/>
+
+            {/* Connecting lines — top node to tier 2 */}
+            <line x1="300" y1="148" x2="180" y2="250" stroke="rgba(201,168,76,0.20)" strokeWidth="0.9"/>
+            <line x1="300" y1="148" x2="300" y2="250" stroke="rgba(201,168,76,0.20)" strokeWidth="0.9"/>
+            <line x1="300" y1="148" x2="420" y2="250" stroke="rgba(201,168,76,0.20)" strokeWidth="0.9"/>
+
+            {/* Connecting lines — tier 2 to tier 3 left branch */}
+            <line x1="180" y1="278" x2="130" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+            <line x1="180" y1="278" x2="200" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+
+            {/* Connecting lines — tier 2 to tier 3 center branch */}
+            <line x1="300" y1="278" x2="270" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+            <line x1="300" y1="278" x2="330" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+
+            {/* Connecting lines — tier 2 to tier 3 right branch */}
+            <line x1="420" y1="278" x2="390" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+            <line x1="420" y1="278" x2="460" y2="370" stroke="rgba(201,168,76,0.15)" strokeWidth="0.8"/>
+            <line x1="420" y1="278" x2="430" y2="430" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8"/>
+
+            {/* Tier 2 nodes — 3 dept heads r=8 */}
+            <circle cx="180" cy="264" r="8" fill="none" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+            <circle cx="180" cy="264" r="5" fill="rgba(201,168,76,0.3)" filter="drop-shadow(0 0 5px rgba(201,168,76,0.5))"/>
+            <circle cx="300" cy="264" r="8" fill="none" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+            <circle cx="300" cy="264" r="5" fill="rgba(201,168,76,0.3)" filter="drop-shadow(0 0 5px rgba(201,168,76,0.5))"/>
+            <circle cx="420" cy="264" r="8" fill="none" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+            <circle cx="420" cy="264" r="5" fill="rgba(201,168,76,0.3)" filter="drop-shadow(0 0 5px rgba(201,168,76,0.5))"/>
+
+            {/* Tier 3 nodes — small team members r=5 */}
+            {[130, 200, 270, 330, 390, 460].map((x, i) => (
+              <circle key={i} cx={x} cy="382" r="5" fill="rgba(201,168,76,0.25)" filter="drop-shadow(0 0 4px rgba(201,168,76,0.4))"/>
+            ))}
+            {/* Extra tier 3 node */}
+            <circle cx="430" cy="442" r="5" fill="rgba(201,168,76,0.20)" filter="drop-shadow(0 0 4px rgba(201,168,76,0.35))"/>
+
+            {/* Top leader node — r=12, pulsing glow */}
+            <circle cx="300" cy="148" r="18" fill="none" stroke="rgba(201,168,76,0.20)" strokeWidth="1"/>
+            <circle cx="300" cy="148" r="12" fill="none" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+            <g className="tm-svg-pulse">
+              <circle cx="300" cy="148" r="7" fill="#c9a84c" filter="drop-shadow(0 0 12px rgba(201,168,76,0.9))"/>
+            </g>
+          </svg>
+        </div>
+      </section>
+
       <TeamSection
         members={foundingTeam}
         title="Founding Leadership Team"
@@ -431,6 +550,7 @@ export default function TeamClient({ foundingTeam = [], opsTeam = [], ctaTitle }
 
       <section className="tm-cta">
         <div className="tm-container">
+          <div className="tm-cta-eyebrow">Join Us</div>
           <h2 className="tm-cta-title">{ctaTitle ?? 'Want to Join Our Team?'}</h2>
           <p className="tm-cta-desc">
             We&apos;re always looking for passionate young people to help us build

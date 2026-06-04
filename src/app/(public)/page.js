@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { createClient } from '@/lib/supabase/server';
 import HomeClient from '@/components/ui/HomeClient';
 import './page.css';
@@ -5,9 +7,15 @@ import './page.css';
 export default async function HomePage() {
   const supabase = await createClient();
 
-  const [settingsRes, valuesRes, eventsRes] = await Promise.all([
+  const [settingsRes, valuesRes, ongoingRes, eventsRes] = await Promise.all([
     supabase.from('site_settings').select('key, value'),
     supabase.from('core_values').select('*').eq('is_active', true).order('sort_order', { ascending: true }),
+    supabase
+      .from('events')
+      .select('id, title, slug, event_type, display_date, event_date, location, short_description, highlights')
+      .eq('is_published', true)
+      .eq('status', 'Ongoing')
+      .order('event_date', { ascending: true }),
     supabase
       .from('events')
       .select('id, title, slug, event_type, display_date, event_date, location, short_description, highlights')
@@ -28,13 +36,15 @@ export default async function HomePage() {
     .sort((a, b) => (a.sort_order || 0) - (b.sort_order || 0));
 
   const coreValues = valuesRes.data || [];
-  const upcomingEvents = eventsRes.data || [];
+  const ongoingEvents  = ongoingRes.data  || [];
+  const upcomingEvents = eventsRes.data   || [];
 
   return (
     <HomeClient
       settings={s}
       statItems={statItems}
       coreValues={coreValues}
+      ongoingEvents={ongoingEvents}
       upcomingEvents={upcomingEvents}
     />
   );

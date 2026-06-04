@@ -1,9 +1,22 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import { createClient } from '@/lib/supabase/client';
+import { createBrowserClient } from '@supabase/ssr';
+
+function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    }
+  );
+}
 
 const NAV_ITEMS = [
   {
@@ -149,6 +162,7 @@ const ICON_CLOSE = (
 
 export default function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
@@ -179,6 +193,12 @@ export default function AdminSidebar() {
   useEffect(() => {
     setDrawerOpen(false);
   }, [pathname]);
+
+  async function handleSignOut() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    router.push('/admin/login');
+  }
 
   function isActive(item) {
     if (item.exact) return pathname === item.href;
@@ -230,10 +250,10 @@ export default function AdminSidebar() {
           <span className="sidebar-link-label">View Site</span>
         </a>
 
-        <a href="/admin/logout" className="sidebar-link sidebar-link--danger">
+        <button onClick={handleSignOut} className="sidebar-link sidebar-link--danger">
           <span className="sidebar-link-icon">{ICON_SIGNOUT}</span>
           <span className="sidebar-link-label">Sign Out</span>
-        </a>
+        </button>
       </nav>
     </>
   );

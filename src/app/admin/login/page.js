@@ -1,9 +1,22 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserClient } from '@supabase/ssr'
 import { logActivity } from '@/lib/services/activity.service'
+
+function createClient() {
+  return createBrowserClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
+    }
+  )
+}
 
 export default function LoginPage() {
   const router = useRouter()
@@ -13,6 +26,13 @@ export default function LoginPage() {
   const [password, setPassword] = useState('')
   const [error, setError]       = useState(null)
   const [loading, setLoading]   = useState(false)
+  const [mounted, setMounted]   = useState(false)
+
+  // Delay rendering the inputs by one tick so the browser
+  // has no static value to autofill on page load
+  useEffect(() => {
+    setMounted(true)
+  }, [])
 
   const handleLogin = async (e) => {
     e.preventDefault()
@@ -27,7 +47,6 @@ export default function LoginPage() {
       return
     }
 
-    // Log the login action directly (user now exists in data.user)
     await logActivity({
       action:      'login',
       entity:      'auth',
@@ -37,6 +56,13 @@ export default function LoginPage() {
 
     router.push('/admin')
     router.refresh()
+  }
+
+  const inputStyle = {
+    width: '100%', padding: '0.65rem 0.85rem',
+    background: '#0f172a', border: '1px solid #334155',
+    borderRadius: '8px', color: '#f8fafc', fontSize: '0.95rem',
+    outline: 'none', boxSizing: 'border-box',
   }
 
   return (
@@ -62,41 +88,58 @@ export default function LoginPage() {
           Sign in to manage YouthVerse Union
         </p>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleLogin} autoComplete="off">
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
               Email
             </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              style={{
-                width: '100%', padding: '0.65rem 0.85rem',
-                background: '#0f172a', border: '1px solid #334155',
-                borderRadius: '8px', color: '#f8fafc', fontSize: '0.95rem',
-                outline: 'none', boxSizing: 'border-box',
-              }}
-            />
+            {/* Render a dummy readonly input first, swap to real one after mount */}
+            {mounted ? (
+              <input
+                key="email-real"
+                type="text"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                autoComplete="off"
+                data-lpignore="true"
+                data-form-type="other"
+                style={inputStyle}
+              />
+            ) : (
+              <input
+                key="email-dummy"
+                type="text"
+                readOnly
+                style={inputStyle}
+              />
+            )}
           </div>
 
           <div style={{ marginBottom: '1.5rem' }}>
             <label style={{ display: 'block', color: '#cbd5e1', fontSize: '0.85rem', marginBottom: '0.4rem' }}>
               Password
             </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              style={{
-                width: '100%', padding: '0.65rem 0.85rem',
-                background: '#0f172a', border: '1px solid #334155',
-                borderRadius: '8px', color: '#f8fafc', fontSize: '0.95rem',
-                outline: 'none', boxSizing: 'border-box',
-              }}
-            />
+            {mounted ? (
+              <input
+                key="password-real"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                autoComplete="off"
+                data-lpignore="true"
+                data-form-type="other"
+                style={inputStyle}
+              />
+            ) : (
+              <input
+                key="password-dummy"
+                type="password"
+                readOnly
+                style={inputStyle}
+              />
+            )}
           </div>
 
           {error && (

@@ -105,6 +105,67 @@ function HeroSection({ s }) {
             'Competitions, workshops, research symposiums, and transformative programs — discover all that YouthVerse Union has to offer.'}
         </p>
       </div>
+      {/* Orbital Event Rings SVG — right-side graphic */}
+      <div className="ev-hero-graphic" aria-hidden="true">
+        <svg viewBox="0 0 600 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <style>{`
+            @keyframes ev-slowSpin {
+              from { transform: rotate(0deg); }
+              to   { transform: rotate(360deg); }
+            }
+            @keyframes ev-pulse {
+              0%, 100% { opacity: 0.6; transform: scale(1); }
+              50%       { opacity: 1;   transform: scale(1.15); }
+            }
+            .ev-svg-outer { transform-origin: 300px 300px; animation: ev-slowSpin 60s linear infinite; }
+            .ev-svg-ring2 { transform-origin: 300px 300px; animation: ev-slowSpin 40s linear infinite reverse; }
+            .ev-svg-ring3 { transform-origin: 300px 300px; animation: ev-slowSpin 28s linear infinite; }
+            .ev-svg-pulse { transform-origin: 300px 300px; animation: ev-pulse 3s ease-in-out infinite; }
+          `}</style>
+
+          <g opacity="0.04" stroke="rgba(201,168,76,1)" strokeWidth="0.8">
+            {[100,160,220,280,340,400,460,520].map((y, i) => (
+              <line key={'h'+i} x1="40" y1={y} x2="560" y2={y}/>
+            ))}
+            {[100,160,220,280,340,400,460,520].map((x, i) => (
+              <line key={'v'+i} x1={x} y1="40" x2={x} y2="560"/>
+            ))}
+          </g>
+
+          <line x1="80" y1="520" x2="520" y2="80" stroke="rgba(201,168,76,0.07)" strokeWidth="1"/>
+
+          <g className="ev-svg-ring3">
+            <circle cx="300" cy="300" r="90" fill="none" stroke="rgba(201,168,76,0.18)" strokeWidth="1"/>
+            <circle cx="300" cy="210" r="5" fill="#c9a84c" filter="drop-shadow(0 0 8px rgba(201,168,76,0.9))"/>
+          </g>
+
+          <g className="ev-svg-ring2">
+            <circle cx="300" cy="300" r="160" fill="none" stroke="rgba(201,168,76,0.15)" strokeWidth="1" strokeDasharray="6 10"/>
+            <circle cx="300" cy="140" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+            <circle cx="460" cy="300" r="4" fill="rgba(201,168,76,0.5)" filter="drop-shadow(0 0 5px rgba(201,168,76,0.5))"/>
+          </g>
+
+          <g className="ev-svg-outer">
+            <circle cx="300" cy="300" r="248" fill="none" stroke="rgba(201,168,76,0.20)" strokeWidth="1.2"/>
+            <circle cx="300" cy="52" r="4.5" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+            <circle cx="514" cy="424" r="3.5" fill="rgba(201,168,76,0.45)" filter="drop-shadow(0 0 5px rgba(201,168,76,0.5))"/>
+            <circle cx="86" cy="424" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+          </g>
+
+          <line x1="300" y1="272" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="320" y1="280" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="280" y1="280" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="300" y1="328" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="328" y1="300" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="272" y1="300" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="320" y1="320" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+          <line x1="280" y1="320" x2="300" y2="300" stroke="rgba(201,168,76,0.35)" strokeWidth="1.2"/>
+
+          <g className="ev-svg-pulse">
+            <circle cx="300" cy="300" r="7" fill="#c9a84c" filter="drop-shadow(0 0 10px rgba(201,168,76,0.8))"/>
+          </g>
+        </svg>
+      </div>
     </section>
   );
 }
@@ -193,7 +254,43 @@ function HighlightCard({ num, text }) {
 }
 
 // ══════════════════════════════════════════════════════════
-// SECTION 3: UPCOMING EVENTS
+// SECTION 3: ONGOING EVENTS
+// ══════════════════════════════════════════════════════════
+function OngoingSection({ s, events }) {
+  if (!events.length) return null;
+  const { visible, setRef } = useScrollReveal();
+
+  return (
+    <section className="ev-upcoming">
+      <div className="ev-container">
+        <div className="ev-upcoming-header">
+          <div className="ev-up-pill" style={{ background: 'var(--gold)', color: '#000' }}>● ONGOING</div>
+          <h2 className="ev-up-title">
+            {s.events_ongoing_title ?? 'Happening Now'}
+          </h2>
+          <p className="ev-up-sub">
+            {s.events_ongoing_subtitle ?? 'Events currently in progress.'}
+          </p>
+        </div>
+        <div className="ev-up-list">
+          {events.map((ev, i) => (
+            <div
+              key={ev.id}
+              ref={setRef(i)}
+              className={`ev-up-card${visible.has(i) ? ' ev-visible' : ''}`}
+              style={{ transitionDelay: `${i * 100}ms` }}
+            >
+              <UpcomingCard event={ev} />
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ══════════════════════════════════════════════════════════
+// SECTION 4: UPCOMING EVENTS
 // ══════════════════════════════════════════════════════════
 function UpcomingSection({ s, events }) {
   if (!events.length) return null;
@@ -255,7 +352,7 @@ function UpcomingCard({ event }) {
 }
 
 // ══════════════════════════════════════════════════════════
-// SECTION 4: PAST EVENTS
+// SECTION 5: PAST EVENTS
 // ══════════════════════════════════════════════════════════
 function PastSection({ s, events }) {
   if (!events.length) return null;
@@ -333,7 +430,7 @@ function PastEventCard({ event }) {
 }
 
 // ══════════════════════════════════════════════════════════
-// SECTION 5: CTA
+// SECTION 6: CTA
 // ══════════════════════════════════════════════════════════
 function CtaSection({ s }) {
   return (
@@ -372,6 +469,7 @@ function CtaSection({ s }) {
 export default function EventsClient({
   settings = {},
   featuredEvent = null,
+  ongoingEvents = [],
   upcomingEvents = [],
   pastEvents = [],
 }) {
@@ -379,6 +477,7 @@ export default function EventsClient({
     <>
       <HeroSection s={settings} />
       <SpotlightSection s={settings} event={featuredEvent} />
+      <OngoingSection s={settings} events={ongoingEvents} />
       <UpcomingSection s={settings} events={upcomingEvents} />
       <PastSection s={settings} events={pastEvents} />
       <CtaSection s={settings} />

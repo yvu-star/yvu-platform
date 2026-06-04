@@ -18,19 +18,36 @@ export async function middleware(request) {
           )
         },
       },
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+      },
     }
   )
 
+  // Always verify the session directly — do not rely on cookie name sniffing.
+  // getUser() validates the JWT with Supabase servers; if there's no valid
+  // session it returns null regardless of what cookies exist in the browser.
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) {
+    // No valid session — clear any stale auth cookies and redirect to login
     const loginUrl = new URL('/admin/login', request.url)
-    return NextResponse.redirect(loginUrl)
+    const redirectResponse = NextResponse.redirect(loginUrl)
+
+    request.cookies.getAll().forEach(({ name }) => {
+      if (name.startsWith('sb-')) {
+        redirectResponse.cookies.set(name, '', { maxAge: 0, path: '/' })
+      }
+    })
+
+    return redirectResponse
   }
 
+  // Valid session — allow through
   return supabaseResponse
 }
 
 export const config = {
-  matcher: ['/admin/((?!login).*)'],
+  matcher: ['/admin', '/admin/((?!login).*)'],
 }

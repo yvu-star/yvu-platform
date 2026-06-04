@@ -140,28 +140,31 @@ function Reveal({ children, className = '', delay = 0, dir = 'up' }) {
   );
 }
 
-// ── Timeline Item ─────────────────────────────────────────────────────────────
+// ── Redesigned Timeline Item ──────────────────────────────────────────────────
 
 function TimelineItem({ item, index }) {
   const [expanded, setExpanded] = useState(false);
   const [ref, visible] = useReveal();
-  const isLeft = index % 2 === 0;
   const hasMore = item.expanded_description && item.expanded_description.trim().length > 0;
   const dateLabel = [item.month, item.year].filter(Boolean).join(' ') || '';
 
   return (
     <div
       ref={ref}
-      className={`ab-tl-item ${isLeft ? 'ab-tl-item--left' : 'ab-tl-item--right'}`}
+      className="ab-tl-item"
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : (isLeft ? 'translateX(-32px)' : 'translateX(32px)'),
-        transition: `opacity 0.7s ${index * 100}ms ease, transform 0.7s ${index * 100}ms ease`,
+        transform: visible ? 'none' : 'translateY(24px)',
+        transition: `opacity 0.6s ${index * 80}ms ease, transform 0.6s ${index * 80}ms ease`,
       }}
     >
-      <div className="ab-tl-dot" />
-      <div className={`ab-tl-card ${expanded ? 'ab-tl-card--open' : ''}`}>
+      <div className="ab-tl-time-block">
         {dateLabel && <span className="ab-tl-year">{dateLabel}</span>}
+      </div>
+      
+      <div className="ab-tl-dot" />
+      
+      <div className={`ab-tl-card ${expanded ? 'ab-tl-card--open' : ''}`}>
         {item.icon && (
           <div className="ab-tl-icon">
             {resolveIcon(item.icon, 20, 'var(--gold)')}
@@ -227,30 +230,45 @@ function ValueCard({ v, delay }) {
 // ── Drive Card ────────────────────────────────────────────────────────────────
 
 function DriveCard({ v, index, delay }) {
-  const tilt = useTilt();
   const [ref, visible] = useReveal();
-  const isAlt = index % 2 !== 0;
+  const [expanded, setExpanded] = useState(false);
+  const hasMore = v.long_description && v.long_description.trim().length > 0;
 
   return (
     <div
       ref={ref}
       style={{
         opacity: visible ? 1 : 0,
-        transform: visible ? 'none' : 'translateY(32px)',
+        transform: visible ? 'none' : 'translateY(28px)',
         transition: `opacity 0.7s ${delay}ms ease, transform 0.7s ${delay}ms ease`,
       }}
     >
-      <div
-        ref={tilt.ref}
-        onMouseMove={tilt.onMouseMove}
-        onMouseLeave={tilt.onMouseLeave}
-        className={`ab-drive-card ${isAlt ? 'ab-drive-card--alt' : ''}`}
-      >
-        <div className={`ab-drive-icon-box ${isAlt ? 'ab-drive-icon-box--alt' : ''}`}>
-          {resolveIcon(v.icon || 'Star', 22, 'var(--gold)')}
+      <div className={`ab-drive-card-v2 ${expanded ? 'ab-drive-card-v2--open' : ''}`}>
+        <div className="ab-drive-v2-icon">
+          {resolveIcon(v.icon || 'Star', 24, 'var(--gold)')}
         </div>
-        <h3 className="ab-drive-name">{v.name}</h3>
-        <p className="ab-drive-short">{v.short_description}</p>
+        <div className="ab-drive-v2-body">
+          <h3 className="ab-drive-v2-name">{v.name}</h3>
+          <p className="ab-drive-v2-short">{v.short_description}</p>
+          {hasMore && (
+            <div className={`ab-drive-v2-more ${expanded ? 'ab-drive-v2-more--open' : ''}`}>
+              <div className="ab-drive-v2-divider" />
+              <p className="ab-drive-v2-long">{v.long_description}</p>
+            </div>
+          )}
+          {hasMore && (
+            <button
+              type="button"
+              className="ab-drive-v2-toggle"
+              onClick={() => setExpanded(p => !p)}
+              aria-expanded={expanded}
+            >
+              {expanded
+                ? (<><ChevronUp size={14} /> Show less</>)
+                : (<><ChevronDown size={14} /> Learn more</>)}
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );
@@ -402,20 +420,112 @@ export default function AboutClient({ settings, coreValues, timeline }) {
             </Reveal>
           </div>
 
-          {/* Right: Decorative orbital graphic */}
+          {/* Right: Constellation Network SVG Graphic */}
           <Reveal className="ab-hero-deco" delay={200} dir="right">
-            <div className="ab-hero-orb-wrap">
-              <div className="ab-hero-orb ab-hero-orb--ring1" />
-              <div className="ab-hero-orb ab-hero-orb--ring2" />
-              <div className="ab-hero-orb ab-hero-orb--ring3" />
-              <div className="ab-hero-orb-core">
-                <Globe size={36} color="var(--gold)" strokeWidth={1.2} />
-              </div>
-              <div className="ab-hero-orb-dot ab-hero-orb-dot--1"><Users size={14} color="var(--gold)" strokeWidth={1.5} /></div>
-              <div className="ab-hero-orb-dot ab-hero-orb-dot--2"><BookOpen size={14} color="var(--gold)" strokeWidth={1.5} /></div>
-              <div className="ab-hero-orb-dot ab-hero-orb-dot--3"><Sparkles size={14} color="var(--gold)" strokeWidth={1.5} /></div>
-              <div className="ab-hero-orb-dot ab-hero-orb-dot--4"><Zap size={14} color="var(--gold)" strokeWidth={1.5} /></div>
-            </div>
+            <svg viewBox="0 0 600 600" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg" style={{ display: 'block', maxHeight: '520px' }}>
+              <style>{`
+                @keyframes slowSpin {
+                  from { transform: rotate(0deg); }
+                  to   { transform: rotate(360deg); }
+                }
+                @keyframes pulse {
+                  0%, 100% { opacity: 0.6; transform: scale(1); }
+                  50%       { opacity: 1;   transform: scale(1.15); }
+                }
+                .ab-svg-spin-outer {
+                  transform-origin: 300px 300px;
+                  animation: slowSpin 60s linear infinite;
+                }
+                .ab-svg-spin-mid {
+                  transform-origin: 300px 300px;
+                  animation: slowSpin 40s linear infinite reverse;
+                }
+                .ab-svg-pulse {
+                  transform-origin: 300px 300px;
+                  animation: pulse 3s ease-in-out infinite;
+                }
+              `}</style>
+
+              {/* Outermost ring — slow spin */}
+              <g className="ab-svg-spin-outer">
+                <circle cx="300" cy="300" r="270" fill="none" stroke="rgba(201,168,76,0.18)" strokeWidth="1"/>
+                <circle cx="300" cy="30" r="3" fill="rgba(201,168,76,0.3)"/>
+                <circle cx="300" cy="570" r="3" fill="rgba(201,168,76,0.3)"/>
+                <circle cx="30" cy="300" r="3" fill="rgba(201,168,76,0.3)"/>
+                <circle cx="570" cy="300" r="3" fill="rgba(201,168,76,0.3)"/>
+              </g>
+
+              {/* Mid dashed ring — counter-rotation */}
+              <g className="ab-svg-spin-mid">
+                <circle cx="300" cy="300" r="185" fill="none" stroke="rgba(201,168,76,0.14)" strokeWidth="0.8" strokeDasharray="4 8"/>
+              </g>
+
+              {/* Decorative partial arcs at different radii */}
+              <path d="M 130,200 A 200,200 0 0,1 470,200" fill="none" stroke="rgba(201,168,76,0.12)" strokeWidth="1"/>
+              <path d="M 100,340 A 230,230 0 0,0 500,340" fill="none" stroke="rgba(201,168,76,0.1)" strokeWidth="0.9"/>
+              <path d="M 170,480 A 180,180 0 0,1 430,120" fill="none" stroke="rgba(201,168,76,0.08)" strokeWidth="0.8"/>
+
+              {/* Network node positions (8 nodes in rough circle) */}
+              {/* Node 0: top */}
+              <line x1="300" y1="300" x2="300" y2="130" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="300" y1="130" x2="430" y2="185" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="300" y1="130" x2="190" y2="195" stroke="rgba(201,168,76,0.12)" strokeWidth="0.9"/>
+              <line x1="300" y1="130" x2="390" y2="390" stroke="rgba(201,168,76,0.08)" strokeWidth="0.8"/>
+
+              {/* Node 1: top-right */}
+              <line x1="430" y1="185" x2="300" y2="300" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="430" y1="185" x2="470" y2="320" stroke="rgba(201,168,76,0.14)" strokeWidth="0.9"/>
+              <line x1="430" y1="185" x2="390" y2="390" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8"/>
+
+              {/* Node 2: right */}
+              <line x1="470" y1="320" x2="300" y2="300" stroke="rgba(201,168,76,0.18)" strokeWidth="1"/>
+              <line x1="470" y1="320" x2="390" y2="390" stroke="rgba(201,168,76,0.14)" strokeWidth="0.9"/>
+              <line x1="470" y1="320" x2="430" y2="185" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8"/>
+
+              {/* Node 3: bottom-right */}
+              <line x1="390" y1="390" x2="300" y2="300" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="390" y1="390" x2="210" y2="410" stroke="rgba(201,168,76,0.13)" strokeWidth="0.9"/>
+              <line x1="390" y1="390" x2="165" y2="310" stroke="rgba(201,168,76,0.10)" strokeWidth="0.8"/>
+
+              {/* Node 4: bottom */}
+              <line x1="210" y1="410" x2="300" y2="300" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="210" y1="410" x2="165" y2="310" stroke="rgba(201,168,76,0.13)" strokeWidth="0.9"/>
+              <line x1="210" y1="410" x2="300" y2="130" stroke="rgba(201,168,76,0.08)" strokeWidth="0.8"/>
+
+              {/* Node 5: left */}
+              <line x1="165" y1="310" x2="300" y2="300" stroke="rgba(201,168,76,0.18)" strokeWidth="1"/>
+              <line x1="165" y1="310" x2="190" y2="195" stroke="rgba(201,168,76,0.14)" strokeWidth="0.9"/>
+              <line x1="165" y1="310" x2="210" y2="410" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8"/>
+
+              {/* Node 6: top-left */}
+              <line x1="190" y1="195" x2="300" y2="300" stroke="rgba(201,168,76,0.15)" strokeWidth="0.9"/>
+              <line x1="190" y1="195" x2="300" y2="130" stroke="rgba(201,168,76,0.14)" strokeWidth="0.9"/>
+              <line x1="190" y1="195" x2="430" y2="185" stroke="rgba(201,168,76,0.10)" strokeWidth="0.8"/>
+
+              {/* Node 7: bottom-left diagonal */}
+              <line x1="250" y1="460" x2="300" y2="300" stroke="rgba(201,168,76,0.12)" strokeWidth="0.8"/>
+              <line x1="250" y1="460" x2="210" y2="410" stroke="rgba(201,168,76,0.13)" strokeWidth="0.9"/>
+              <line x1="250" y1="460" x2="390" y2="390" stroke="rgba(201,168,76,0.10)" strokeWidth="0.8"/>
+
+              {/* Outer glow rings around center */}
+              <circle cx="300" cy="300" r="35" fill="none" stroke="rgba(201,168,76,0.06)" strokeWidth="1"/>
+              <circle cx="300" cy="300" r="20" fill="none" stroke="rgba(201,168,76,0.10)" strokeWidth="1"/>
+
+              {/* Network nodes — outer 8 */}
+              <circle cx="300" cy="130" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="430" cy="185" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="470" cy="320" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="390" cy="390" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="210" cy="410" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="165" cy="310" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="190" cy="195" r="4" fill="#c9a84c" filter="drop-shadow(0 0 6px rgba(201,168,76,0.6))"/>
+              <circle cx="250" cy="460" r="4" fill="rgba(201,168,76,0.5)" filter="drop-shadow(0 0 4px rgba(201,168,76,0.4))"/>
+
+              {/* Central focal node — pulsing glow */}
+              <g className="ab-svg-pulse">
+                <circle cx="300" cy="300" r="8" fill="#c9a84c" filter="drop-shadow(0 0 10px rgba(201,168,76,0.8))"/>
+              </g>
+            </svg>
           </Reveal>
         </div>
         {/* Gradient fade into next section */}
@@ -438,14 +548,23 @@ export default function AboutClient({ settings, coreValues, timeline }) {
             )}
           </Reveal>
 
-          {/* Decorative year stub */}
+          {/* Decorative premium milestone stepper */}
           <Reveal className="ab-story-deco" delay={200} dir="right">
-            <div className="ab-story-spine">
-              <div className="ab-story-spine-line" />
+            <div className="ab-story-stepper">
               {storyYears.map((yr, i) => (
-                <div key={yr + i} className="ab-story-milestone" style={{ top: `${i * 40}%` }}>
-                  <div className="ab-story-dot" />
-                  <span className="ab-story-yr">{yr}</span>
+                <div key={yr + i} className="ab-story-step">
+                  <div className="ab-story-step-track">
+                    <div className="ab-story-step-dot">
+                      <div className="ab-story-step-dot-inner" />
+                    </div>
+                    {i < storyYears.length - 1 && <div className="ab-story-step-line" />}
+                  </div>
+                  <div className="ab-story-step-content">
+                    <span className="ab-story-step-year">{yr}</span>
+                    <span className="ab-story-step-label">
+                      {tlData[i]?.title || ''}
+                    </span>
+                  </div>
                 </div>
               ))}
             </div>
@@ -517,17 +636,6 @@ export default function AboutClient({ settings, coreValues, timeline }) {
         <Reveal delay={220}>
           <p className="ab-phil-quote">{philContent}</p>
         </Reveal>
-        <div className="ab-phil-pillars">
-          {pillars.map((p, i) => (
-            <Reveal key={i} delay={i * 100} className="ab-phil-pillar">
-              <div className="ab-phil-pillar-icon">
-                <LucideIcon name={p.icon} size={24} color="var(--gold)" strokeWidth={1.5} />
-              </div>
-              <h3 className="ab-phil-pillar-title">{p.title}</h3>
-              <p className="ab-phil-pillar-text">{p.text}</p>
-            </Reveal>
-          ))}
-        </div>
       </section>
 
       {/* ── SECTION 6: WHAT DRIVES US ── */}
@@ -539,7 +647,7 @@ export default function AboutClient({ settings, coreValues, timeline }) {
             {drivesSub && <p className="ab-drives-sub">{drivesSub}</p>}
             <GoldDivider centered />
           </Reveal>
-          <div className="ab-drives-grid">
+          <div className="ab-drives-grid-v2">
             {cv.map((v, i) => (
               <DriveCard key={v.id} v={v} index={i} delay={i * 80} />
             ))}
@@ -547,9 +655,7 @@ export default function AboutClient({ settings, coreValues, timeline }) {
         </section>
       )}
 
-      {/* Section 7 (duplicate Core Values) intentionally removed */}
-
-      {/* ── SECTION 8: TIMELINE ── */}
+      {/* ── SECTION 8: REDESIGNED TIMELINE ── */}
       <section className="ab-timeline" id="timeline">
         <Reveal delay={0}>
           <Badge text={timelineBadge} dark />

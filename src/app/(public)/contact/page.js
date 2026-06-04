@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 // src/app/contact/page.js
 import { createClient } from '@/lib/supabase/server';
 import ContactClient from '@/components/ui/ContactClient';
