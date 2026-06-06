@@ -1,5 +1,6 @@
 // src/components/ui/Footer.js
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer({ settings }) {
   const s = settings || {};
@@ -41,8 +42,8 @@ export default function Footer({ settings }) {
           margin-bottom: 1rem;
         }
         .footer-logo-emblem {
-          width: 48px;
-          height: 48px;
+          width: 56px;
+          height: 56px;
           border-radius: 50%;
           border: 2px solid #c9a84c;
           background: rgba(201,168,76,0.08);
@@ -50,7 +51,8 @@ export default function Footer({ settings }) {
           align-items: center;
           justify-content: center;
           flex-shrink: 0;
-          font-size: 1.3rem;
+          overflow: hidden;
+          padding: 6px;
         }
         .footer-wordmark {
           font-size: 1.2rem;
@@ -257,7 +259,15 @@ export default function Footer({ settings }) {
         {/* ── Brand ── */}
         <div className="footer-brand">
           <div className="footer-logo-row">
-            <div className="footer-logo-emblem">⚜</div>
+            <div className="footer-logo-emblem">
+              <Image
+                src="https://i.postimg.cc/KcdyrQ2R/572948008-122103392937085905-5492288171627093196-n-removebg-preview.png"
+                alt="YouthVerse Union Logo"
+                width={44}
+                height={44}
+                style={{ objectFit: 'contain' }}
+              />
+            </div>
             <h4 className="footer-wordmark">YouthVerse <span>Union</span></h4>
           </div>
           <p className="footer-tagline-bold">

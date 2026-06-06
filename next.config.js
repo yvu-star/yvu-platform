@@ -8,6 +8,11 @@ const nextConfig = {
         hostname: 'fsnrnrowvtukaxdfrehq.supabase.co',
         pathname: '/storage/v1/object/public/**',
       },
+      {
+        // Allow YouthVerse Union logo hosted on PostImg
+        protocol: 'https',
+        hostname: 'i.postimg.cc',
+      },
     ],
   },
 
