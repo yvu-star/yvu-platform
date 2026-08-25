@@ -8,11 +8,12 @@ import './research-detail.css';
 
 /* ── Metadata ─────────────────────────────────────────── */
 export async function generateMetadata({ params }) {
+  const { slug } = await params;
   const supabase = await createClient();
   const { data } = await supabase
     .from('research')
     .select('title, abstract')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('is_published', true)
     .single();
 
@@ -41,16 +42,22 @@ function getInitials(name) {
 
 /* ── Page ─────────────────────────────────────────────── */
 export default async function ResearchDetailPage({ params }) {
+  const { slug } = await params;
   const supabase = await createClient();
 
   const { data: item, error } = await supabase
     .from('research')
     .select('*')
-    .eq('slug', params.slug)
+    .eq('slug', slug)
     .eq('is_published', true)
     .single();
 
-  if (error || !item) notFound();
+  if (error || !item) {
+    if (error) {
+      console.error('Research detail fetch error:', error.message);
+    }
+    notFound();
+  }
 
   const authors = Array.isArray(item.authors) ? item.authors.filter((a) => a.name) : [];
   const tags    = Array.isArray(item.tags)    ? item.tags.filter(Boolean)           : [];
