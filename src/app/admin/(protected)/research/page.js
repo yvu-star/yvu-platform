@@ -1,45 +1,23 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { useRealtimeTable } from '@/hooks/useRealtimeTable'
 import { useActivityLog } from '@/hooks/useActivityLog'
+import { createClient } from '@/lib/supabase/client'
 import {
   getResearch,
   createResearch,
   updateResearch,
   deleteResearch,
 } from '@/lib/services/research.service'
-import { supabase } from '@/lib/supabase'
 import DeleteConfirm from '@/components/admin/DeleteConfirm'
 import {
-  FileText,
-  Search,
-  Plus,
-  MoreVertical,
-  ExternalLink,
-  Pencil,
-  Trash2,
-  EyeOff,
-  Loader2,
-  AlertCircle,
-  CheckCircle2,
-  Circle,
-  Clock,
-  Upload,
-  Download,
-  X,
-  FileUp,
+  FileText, Search, Plus, MoreVertical, ExternalLink, Upload,
+  Pencil, Trash2, EyeOff, Loader2, AlertCircle,
+  CheckCircle2, Circle, Clock, Tag, Users, GraduationCap
 } from 'lucide-react'
 
-
-// ── Configuration ─────────────────────────────────────────────
-
-const STORAGE_BUCKET = 'research-papers'
-const MAX_PDF_SIZE = 25 * 1024 * 1024 // 25 MB
-
-
-// ── Slug generator ────────────────────────────────────────────
-
+// ── Slug generator ─────────────────────────────────────────
 function toSlug(str) {
   return str
     .toLowerCase()
@@ -49,14 +27,8 @@ function toSlug(str) {
     .replace(/-+/g, '-')
 }
 
-
-// ── Empty form ────────────────────────────────────────────────
-
-const EMPTY_AUTHOR = {
-  name: '',
-  role: '',
-  affiliation: '',
-}
+// ── Empty form ─────────────────────────────────────────────
+const EMPTY_AUTHOR = { name: '', role: '', affiliation: '' }
 
 const EMPTY_FORM = {
   title: '',
@@ -72,35 +44,29 @@ const EMPTY_FORM = {
   external_url: '',
 }
 
-
-// ── Status config ─────────────────────────────────────────────
-
+// ── Status config ──────────────────────────────────────────
 const STATUS_CONFIG = {
   Draft: {
     bg: 'rgba(107,122,150,0.08)',
     color: 'var(--text-muted)',
     border: 'rgba(107,122,150,0.18)',
-    Icon: Circle,
+    Icon: Circle
   },
-
   'Under Review': {
     bg: 'rgba(200,167,94,0.10)',
     color: 'var(--gold-dark)',
     border: 'rgba(200,167,94,0.22)',
-    Icon: Clock,
+    Icon: Clock
   },
-
   Published: {
     bg: 'rgba(31,42,68,0.07)',
     color: 'var(--navy)',
     border: 'rgba(31,42,68,0.15)',
-    Icon: CheckCircle2,
+    Icon: CheckCircle2
   },
 }
 
-
-// ── Section box wrapper ───────────────────────────────────────
-
+// ── Section box wrapper ────────────────────────────────────
 function Section({ title, children }) {
   return (
     <div className="form-section">
@@ -110,23 +76,18 @@ function Section({ title, children }) {
   )
 }
 
-
 function Field({ label, required, children }) {
   return (
     <div className="field">
       <label className="field__label">
-        {label}
-        {required && <span className="field__required">*</span>}
+        {label}{required && <span className="field__required">*</span>}
       </label>
-
       {children}
     </div>
   )
 }
 
-
-// ── Toggle switch ────────────────────────────────────────────
-
+// ── Toggle switch ──────────────────────────────────────────
 function Toggle({ checked, onChange, label }) {
   return (
     <label className="toggle">
@@ -139,15 +100,12 @@ function Toggle({ checked, onChange, label }) {
           style={{ left: checked ? 21 : 3 }}
         />
       </div>
-
       <span className="toggle__label">{label}</span>
     </label>
   )
 }
 
-
-// ── Main Page ─────────────────────────────────────────────────
-
+// ── Main Page ──────────────────────────────────────────────
 export default function ResearchPage() {
   const { data, loading, error } = useRealtimeTable(
     getResearch,
@@ -156,127 +114,89 @@ export default function ResearchPage() {
 
   const { log } = useActivityLog()
 
-  const fileInputRef = useRef(null)
-
   const [search, setSearch] = useState('')
   const [showModal, setShowModal] = useState(false)
   const [editItem, setEditItem] = useState(null)
   const [deleteItem, setDeleteItem] = useState(null)
-
   const [form, setForm] = useState(EMPTY_FORM)
-
   const [saving, setSaving] = useState(false)
-  const [uploadingPdf, setUploadingPdf] = useState(false)
-  const [uploadProgress, setUploadProgress] = useState(0)
-
   const [formError, setFormError] = useState('')
   const [slugEdited, setSlugEdited] = useState(false)
   const [tagInput, setTagInput] = useState('')
-
   const [activeMenuId, setActiveMenuId] = useState(null)
   const [menuPos, setMenuPos] = useState({
     top: 0,
-    right: 0,
+    right: 0
   })
 
+  // PDF upload state
+  const [uploadingPdf, setUploadingPdf] = useState(false)
+  const [uploadError, setUploadError] = useState('')
 
-  // ── Auto slug ───────────────────────────────────────────────
-
+  // Auto-slug from title
   useEffect(() => {
     if (!slugEdited && form.title) {
       setForm(prev => ({
         ...prev,
-        slug: toSlug(prev.title),
+        slug: toSlug(prev.title)
       }))
     }
   }, [form.title, slugEdited])
-
-
-  // ── Filter ─────────────────────────────────────────────────
 
   const filtered = (data || []).filter(e =>
     e.title?.toLowerCase().includes(search.toLowerCase())
   )
 
-
-  // ── Open create ─────────────────────────────────────────────
-
   function openCreate() {
     setForm({
       ...EMPTY_FORM,
-      authors: [{ ...EMPTY_AUTHOR }],
+      authors: [{ ...EMPTY_AUTHOR }]
     })
 
     setEditItem(null)
     setFormError('')
+    setUploadError('')
     setSlugEdited(false)
     setTagInput('')
-    setUploadProgress(0)
-
     setShowModal(true)
   }
-
-
-  // ── Open edit ───────────────────────────────────────────────
 
   function openEdit(row) {
     setForm({
       title: row.title ?? '',
       slug: row.slug ?? '',
       abstract: row.abstract ?? '',
-
       authors:
         Array.isArray(row.authors) && row.authors.length
           ? row.authors
           : [{ ...EMPTY_AUTHOR }],
-
-      tags: Array.isArray(row.tags)
-        ? row.tags
-        : [],
-
+      tags: Array.isArray(row.tags) ? row.tags : [],
       status: row.status ?? 'Draft',
-
-      is_published:
-        row.is_published ?? false,
-
-      category:
-        row.category ?? '',
-
-      published_at:
-        row.published_at
-          ? new Date(row.published_at)
-              .toISOString()
-              .slice(0, 10)
-          : '',
-
-      pdf_url:
-        row.pdf_url ??
-        row.file_url ??
-        '',
-
-      external_url:
-        row.external_url ?? '',
+      is_published: row.is_published ?? false,
+      category: row.category ?? '',
+      published_at: row.published_at
+        ? new Date(row.published_at)
+            .toISOString()
+            .slice(0, 10)
+        : '',
+      pdf_url: row.pdf_url ?? row.file_url ?? '',
+      external_url: row.external_url ?? '',
     })
 
     setEditItem(row)
     setFormError('')
+    setUploadError('')
     setSlugEdited(true)
     setTagInput('')
-    setUploadProgress(0)
-
     setShowModal(true)
   }
-
-
-  // ── Form helpers ────────────────────────────────────────────
 
   function setField(name, value) {
     setForm(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }))
   }
-
 
   function handleInput(e) {
     const { name, value } = e.target
@@ -287,34 +207,28 @@ export default function ResearchPage() {
 
     setForm(prev => ({
       ...prev,
-      [name]: value,
+      [name]: value
     }))
   }
 
-
-  // ── Authors ─────────────────────────────────────────────────
-
+  // ── Authors helpers ──────────────────────────────────────
   function setAuthorField(i, key, val) {
-    const arr = form.authors.map((a, idx) =>
-      idx === i
-        ? {
-            ...a,
-            [key]: val,
-          }
-        : a
+    const arr = form.authors.map(
+      (a, idx) =>
+        idx === i
+          ? { ...a, [key]: val }
+          : a
     )
 
     setField('authors', arr)
   }
 
-
   function addAuthor() {
     setField('authors', [
       ...form.authors,
-      { ...EMPTY_AUTHOR },
+      { ...EMPTY_AUTHOR }
     ])
   }
-
 
   function removeAuthor(i) {
     if (form.authors.length === 1) return
@@ -325,25 +239,19 @@ export default function ResearchPage() {
     )
   }
 
-
-  // ── Tags ─────────────────────────────────────────────────────
-
+  // ── Tags helpers ─────────────────────────────────────────
   function addTag(tag) {
     const t = tag.trim()
 
-    if (
-      t &&
-      !form.tags.includes(t)
-    ) {
+    if (t && !form.tags.includes(t)) {
       setField('tags', [
         ...form.tags,
-        t,
+        t
       ])
     }
 
     setTagInput('')
   }
-
 
   function removeTag(tag) {
     setField(
@@ -352,146 +260,107 @@ export default function ResearchPage() {
     )
   }
 
-
-  // ── PDF upload ──────────────────────────────────────────────
-
+  // ── Supabase PDF upload ──────────────────────────────────
   async function handlePdfUpload(e) {
     const file = e.target.files?.[0]
 
+    // Allow selecting the same file again
+    e.target.value = ''
+
     if (!file) return
 
-    setFormError('')
+    setUploadError('')
 
-    // Validate type
-    if (
-      file.type !== 'application/pdf' &&
-      !file.name.toLowerCase().endsWith('.pdf')
-    ) {
-      setFormError('Please select a PDF file.')
-      e.target.value = ''
-      return
-    }
-
-    // Validate size
-    if (file.size > MAX_PDF_SIZE) {
-      setFormError(
-        'PDF is too large. Maximum allowed size is 25 MB.'
+    // Validate file type
+    if (file.type !== 'application/pdf') {
+      setUploadError(
+        'Please select a PDF file.'
       )
-      e.target.value = ''
       return
     }
+
+    // 25 MB maximum
+    const MAX_SIZE = 25 * 1024 * 1024
+
+    if (file.size > MAX_SIZE) {
+      setUploadError(
+        'PDF must be 25 MB or smaller.'
+      )
+      return
+    }
+
+    setUploadingPdf(true)
 
     try {
-      setUploadingPdf(true)
-      setUploadProgress(10)
+      const supabase = createClient()
 
-      // Generate a safe unique filename
-      const extension = 'pdf'
-
-      const safeBaseName = (
-        file.name
-          .replace(/\.[^/.]+$/, '')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-+|-+$/g, '')
-          .slice(0, 80)
-      ) || 'research-paper'
-
-      const uniqueId =
-        typeof crypto !== 'undefined' &&
-        crypto.randomUUID
-          ? crypto.randomUUID()
-          : `${Date.now()}-${Math.random()
-              .toString(36)
-              .slice(2, 10)}`
+      const safeTitle =
+        toSlug(
+          form.title ||
+          file.name.replace(/\.pdf$/i, '')
+        ) || 'research-paper'
 
       const filePath =
-        `${safeBaseName}-${uniqueId}.${extension}`
+        `${safeTitle}-${Date.now()}.pdf`
 
-      setUploadProgress(25)
-
-      // Upload to Supabase Storage
       const {
-        error: uploadError,
+        error: storageError
       } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(filePath, file, {
-          cacheControl: '3600',
-          contentType: 'application/pdf',
-          upsert: false,
-        })
+        .from('research-papers')
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl: '3600',
+            contentType: 'application/pdf',
+            upsert: false,
+          }
+        )
 
-      if (uploadError) {
-        throw uploadError
-      }
-
-      setUploadProgress(75)
-
-      // Get public URL
-      const {
-        data: publicUrlData,
-      } = supabase.storage
-        .from(STORAGE_BUCKET)
-        .getPublicUrl(filePath)
-
-      const publicUrl =
-        publicUrlData?.publicUrl
-
-      if (!publicUrl) {
+      if (storageError) {
         throw new Error(
-          'The PDF uploaded successfully, but no public URL was returned.'
+          storageError.message
         )
       }
 
-      setForm(prev => ({
-        ...prev,
-        pdf_url: publicUrl,
-      }))
+      const { data } =
+        supabase.storage
+          .from('research-papers')
+          .getPublicUrl(filePath)
 
-      setUploadProgress(100)
+      if (!data?.publicUrl) {
+        throw new Error(
+          'Supabase did not return a public PDF URL.'
+        )
+      }
 
-      setFormError('')
+      // Store the generated public URL
+      // in the research form.
+      setField(
+        'pdf_url',
+        data.publicUrl
+      )
 
     } catch (err) {
-      console.error('PDF upload error:', err)
+      console.error(
+        '[Research PDF Upload]',
+        err
+      )
 
-      setFormError(
+      setUploadError(
         err?.message ||
-        'Failed to upload PDF. Please try again.'
+        'Failed to upload PDF.'
       )
     } finally {
       setUploadingPdf(false)
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
     }
   }
 
-
-  // ── Remove selected PDF URL ─────────────────────────────────
-
-  function removePdf() {
-    setForm(prev => ({
-      ...prev,
-      pdf_url: '',
-    }))
-
-    setUploadProgress(0)
-  }
-
-
-  // ── Submit ──────────────────────────────────────────────────
-
+  // ── Save research ────────────────────────────────────────
   async function handleSubmit() {
     if (!form.title.trim()) {
-      setFormError('Title is required.')
-      return
-    }
-
-    if (uploadingPdf) {
       setFormError(
-        'Please wait until the PDF upload finishes.'
+        'Title is required.'
       )
       return
     }
@@ -528,14 +397,17 @@ export default function ResearchPage() {
           form.published_at || null,
 
         pdf_url:
-          form.pdf_url.trim() || null,
+          form.pdf_url.trim() ||
+          null,
 
-        // Keep legacy field synchronized
+        // Legacy synchronization
         file_url:
-          form.pdf_url.trim() || null,
+          form.pdf_url.trim() ||
+          null,
 
         external_url:
-          form.external_url.trim() || null,
+          form.external_url.trim() ||
+          null,
       }
 
       if (editItem) {
@@ -549,40 +421,36 @@ export default function ResearchPage() {
           entity: 'research',
           entityId: editItem.id,
           description:
-            `Updated research: ${payload.title}`,
+            `Updated research: ${payload.title}`
         })
-
       } else {
         const result =
-          await createResearch(payload)
+          await createResearch(
+            payload
+          )
 
         await log({
           action: 'create',
           entity: 'research',
           entityId: result?.id,
           description:
-            `Created research: ${payload.title}`,
+            `Created research: ${payload.title}`
         })
       }
 
       setShowModal(false)
 
     } catch (err) {
-      console.error(err)
-
       setFormError(
         err?.message ??
         'Failed to save publication.'
       )
-
     } finally {
       setSaving(false)
     }
   }
 
-
-  // ── Delete ──────────────────────────────────────────────────
-
+  // ── Delete research ──────────────────────────────────────
   async function handleDelete() {
     try {
       await deleteResearch(
@@ -594,7 +462,7 @@ export default function ResearchPage() {
         entity: 'research',
         entityId: deleteItem.id,
         description:
-          `Deleted research: ${deleteItem.title}`,
+          `Deleted research: ${deleteItem.title}`
       })
 
       setDeleteItem(null)
@@ -604,7 +472,6 @@ export default function ResearchPage() {
     }
   }
 
-
   if (error) {
     return (
       <div className="dash-error">
@@ -613,13 +480,10 @@ export default function ResearchPage() {
     )
   }
 
-
-  // ── UI ───────────────────────────────────────────────────────
-
   return (
     <>
       <style>{`
-
+        /* ── CSS Variables ── */
         .research-page {
           --navy: #1f2a44;
           --navy-dark: #131c30;
@@ -647,20 +511,40 @@ export default function ResearchPage() {
           --radius-xl: 28px;
 
           --transition:
-            all 0.35s
-            cubic-bezier(0.25,0.46,0.45,0.94);
+            all
+            0.35s
+            cubic-bezier(
+              0.25,
+              0.46,
+              0.45,
+              0.94
+            );
         }
 
+        /* ── Page Base ── */
         .research-page {
-          animation: rsPageIn 0.3s ease both;
-          background-color: var(--beige-warm);
+          animation:
+            rsPageIn
+            0.3s
+            ease
+            both;
+
+          background-color:
+            var(--beige-warm);
+
           min-height: 100vh;
-          padding: 32px 40px;
+
+          padding:
+            32px
+            40px;
+
           font-family:
             system-ui,
             -apple-system,
             sans-serif;
+
           position: relative;
+
           box-sizing: border-box;
         }
 
@@ -676,9 +560,7 @@ export default function ResearchPage() {
           }
         }
 
-
-        /* ── Header ── */
-
+        /* ── Page Header ── */
         .research-header {
           display: flex;
           justify-content: space-between;
@@ -695,9 +577,15 @@ export default function ResearchPage() {
         .research-header__icon-box {
           width: 52px;
           height: 52px;
-          background: var(--navy);
-          color: var(--gold-light);
-          border-radius: var(--radius-md);
+
+          background:
+            var(--navy);
+
+          color:
+            var(--gold-light);
+
+          border-radius:
+            var(--radius-md);
 
           display: flex;
           align-items: center;
@@ -746,36 +634,48 @@ export default function ResearchPage() {
           gap: 8px;
 
           height: 40px;
-          padding: 0 20px;
 
-          background: var(--navy);
+          padding:
+            0 20px;
+
+          background:
+            var(--navy);
+
           color: #fff;
 
           border: none;
-          border-radius: var(--radius-sm);
+
+          border-radius:
+            var(--radius-sm);
 
           font-size: 13px;
           font-weight: 600;
 
           cursor: pointer;
-          transition: var(--transition);
+
+          transition:
+            var(--transition);
 
           white-space: nowrap;
+
           letter-spacing: 0.01em;
+
           flex-shrink: 0;
         }
 
         .btn-add-research:hover {
-          background: var(--navy-dark);
-          transform: translateY(-1px);
+          background:
+            var(--navy-dark);
+
+          transform:
+            translateY(-1px);
+
           box-shadow:
             0 4px 16px
             rgba(31,42,68,0.22);
         }
 
-
-        /* ── Content card ── */
-
+        /* ── Main Content Card ── */
         .research-content-card {
           background: #fff;
 
@@ -783,7 +683,8 @@ export default function ResearchPage() {
             1px solid
             rgba(31,42,68,0.08);
 
-          border-radius: var(--radius-lg);
+          border-radius:
+            var(--radius-lg);
 
           box-shadow:
             0 4px 24px
@@ -797,7 +698,9 @@ export default function ResearchPage() {
           align-items: center;
           justify-content: space-between;
 
-          padding: 18px 28px;
+          padding:
+            18px
+            28px;
 
           border-bottom:
             1px solid
@@ -827,9 +730,12 @@ export default function ResearchPage() {
 
           min-width: 22px;
           height: 22px;
-          padding: 0 7px;
 
-          background: var(--beige-light);
+          padding:
+            0 7px;
+
+          background:
+            var(--beige-light);
 
           border:
             1px solid
@@ -839,7 +745,9 @@ export default function ResearchPage() {
 
           font-size: 11px;
           font-weight: 700;
-          color: var(--navy);
+
+          color:
+            var(--navy);
         }
 
         .research-content-card__search {
@@ -848,11 +756,15 @@ export default function ResearchPage() {
 
         .research-content-card__search svg {
           position: absolute;
+
           left: 12px;
           top: 50%;
-          transform: translateY(-50%);
 
-          color: var(--text-muted);
+          transform:
+            translateY(-50%);
+
+          color:
+            var(--text-muted);
 
           pointer-events: none;
         }
@@ -861,20 +773,28 @@ export default function ResearchPage() {
           height: 36px;
 
           padding:
-            0 14px 0 36px;
+            0
+            14px
+            0
+            36px;
 
           border:
             1px solid
             rgba(31,42,68,0.12);
 
-          border-radius: var(--radius-sm);
+          border-radius:
+            var(--radius-sm);
 
           font-size: 13px;
-          color: var(--navy);
 
-          background: var(--beige-warm);
+          color:
+            var(--navy);
+
+          background:
+            var(--beige-warm);
 
           outline: none;
+
           width: 240px;
 
           transition:
@@ -883,7 +803,8 @@ export default function ResearchPage() {
         }
 
         .research-search-input:focus {
-          border-color: var(--gold);
+          border-color:
+            var(--gold);
 
           box-shadow:
             0 0 0 3px
@@ -893,35 +814,46 @@ export default function ResearchPage() {
         }
 
         .research-search-input::placeholder {
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
         }
 
-
         /* ── Table ── */
-
         .research-table-wrapper {
           overflow-x: auto;
         }
 
         .research-table {
           width: 100%;
-          border-collapse: collapse;
+
+          border-collapse:
+            collapse;
+
           text-align: left;
-          table-layout: fixed;
+
+          table-layout:
+            fixed;
         }
 
         .research-table th {
-          background: var(--beige-warm);
+          background:
+            var(--beige-warm);
 
-          padding: 13px 28px;
+          padding:
+            13px
+            28px;
 
           font-size: 10.5px;
           font-weight: 700;
 
-          text-transform: uppercase;
-          letter-spacing: 0.08em;
+          text-transform:
+            uppercase;
 
-          color: var(--text-muted);
+          letter-spacing:
+            0.08em;
+
+          color:
+            var(--text-muted);
 
           border-bottom:
             1px solid
@@ -929,34 +861,47 @@ export default function ResearchPage() {
         }
 
         .research-table td {
-          padding: 15px 28px;
+          padding:
+            15px
+            28px;
 
           border-bottom:
             1px solid
             rgba(31,42,68,0.04);
 
-          vertical-align: middle;
+          vertical-align:
+            middle;
 
           font-size: 13px;
-          color: var(--navy-mid);
 
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
+          color:
+            var(--navy-mid);
+
+          text-overflow:
+            ellipsis;
+
+          overflow:
+            hidden;
+
+          white-space:
+            nowrap;
         }
 
         .research-table tbody tr {
-          transition: background 0.15s;
+          transition:
+            background 0.15s;
         }
 
         .research-table tbody tr:hover {
-          background-color: var(--beige-warm);
+          background-color:
+            var(--beige-warm);
         }
 
         .research-table tbody tr:last-child td {
           border-bottom: none;
         }
 
+        /* Column controls */
         .col-date {
           width: 13%;
           color: var(--text-muted);
@@ -1007,9 +952,7 @@ export default function ResearchPage() {
           text-align: right;
         }
 
-
-        /* ── Badges ── */
-
+        /* Badges & Pills */
         .badge {
           display: inline-flex;
           align-items: center;
@@ -1018,10 +961,14 @@ export default function ResearchPage() {
           font-size: 9px;
           font-weight: 700;
 
-          text-transform: uppercase;
-          letter-spacing: 0.06em;
+          text-transform:
+            uppercase;
 
-          padding: 2px 6px;
+          letter-spacing:
+            0.06em;
+
+          padding:
+            2px 6px;
 
           border-radius: 4px;
         }
@@ -1030,7 +977,8 @@ export default function ResearchPage() {
           background:
             rgba(107,122,150,0.1);
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
           border:
             1px solid
@@ -1045,12 +993,17 @@ export default function ResearchPage() {
           font-size: 11px;
           font-weight: 600;
 
-          padding: 3px 10px;
+          padding:
+            3px 10px;
 
           border-radius: 20px;
-          border: 1px solid transparent;
 
-          letter-spacing: 0.01em;
+          border:
+            1px solid
+            transparent;
+
+          letter-spacing:
+            0.01em;
         }
 
         .category-pill {
@@ -1060,11 +1013,13 @@ export default function ResearchPage() {
           font-size: 11px;
           font-weight: 600;
 
-          padding: 3px 9px;
+          padding:
+            3px 9px;
 
           border-radius: 20px;
 
-          color: var(--navy-mid);
+          color:
+            var(--navy-mid);
 
           background:
             rgba(31,42,68,0.06);
@@ -1073,12 +1028,11 @@ export default function ResearchPage() {
             1px solid
             rgba(31,42,68,0.10);
 
-          letter-spacing: 0.01em;
+          letter-spacing:
+            0.01em;
         }
 
-
-        /* ── Action menu ── */
-
+        /* ── Action Menu Dropdown ── */
         .action-menu-wrap {
           position: relative;
           display: inline-block;
@@ -1095,9 +1049,11 @@ export default function ResearchPage() {
           background: none;
           border: none;
 
-          border-radius: var(--radius-sm);
+          border-radius:
+            var(--radius-sm);
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
           cursor: pointer;
 
@@ -1107,8 +1063,11 @@ export default function ResearchPage() {
         }
 
         .action-menu-btn:hover {
-          background: var(--beige-light);
-          color: var(--navy);
+          background:
+            var(--beige-light);
+
+          color:
+            var(--navy);
         }
 
         .dropdown-menu {
@@ -1120,7 +1079,8 @@ export default function ResearchPage() {
             1px solid
             rgba(31,42,68,0.08);
 
-          border-radius: var(--radius-md);
+          border-radius:
+            var(--radius-md);
 
           box-shadow:
             0 8px 32px
@@ -1130,21 +1090,26 @@ export default function ResearchPage() {
 
           z-index: 9999;
 
-          min-width: 160px;
+          min-width: 130px;
 
           animation:
-            dropIn 0.15s ease both;
+            dropIn
+            0.15s
+            ease
+            both;
         }
 
         @keyframes dropIn {
           from {
             opacity: 0;
-            transform: translateY(-4px);
+            transform:
+              translateY(-4px);
           }
 
           to {
             opacity: 1;
-            transform: translateY(0);
+            transform:
+              translateY(0);
           }
         }
 
@@ -1157,7 +1122,8 @@ export default function ResearchPage() {
 
           text-align: left;
 
-          padding: 9px 14px;
+          padding:
+            9px 14px;
 
           background: none;
           border: none;
@@ -1167,21 +1133,26 @@ export default function ResearchPage() {
           font-size: 12.5px;
           font-weight: 500;
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
-          transition: background 0.12s;
+          transition:
+            background 0.12s;
         }
 
         .dropdown-item:hover {
-          background: var(--beige-warm);
+          background:
+            var(--beige-warm);
         }
 
         .dropdown-item--danger {
-          color: #c0392b;
+          color:
+            #c0392b;
         }
 
         .dropdown-item--danger:hover {
-          background: #fff5f5;
+          background:
+            #fff5f5;
         }
 
         .dropdown-divider {
@@ -1190,20 +1161,23 @@ export default function ResearchPage() {
           background:
             rgba(31,42,68,0.06);
 
-          margin: 3px 0;
+          margin:
+            3px 0;
         }
 
-
-        /* ── Empty / loading ── */
-
+        /* ── Empty & Loading States ── */
         .research-empty {
-          padding: 64px 24px;
+          padding:
+            64px 24px;
 
-          text-align: center;
+          text-align:
+            center;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
-          font-size: 13.5px;
+          font-size:
+            13.5px;
         }
 
         .research-empty svg {
@@ -1212,7 +1186,8 @@ export default function ResearchPage() {
           margin:
             0 auto 16px;
 
-          color: var(--beige-dark);
+          color:
+            var(--beige-dark);
         }
 
         .research-empty p {
@@ -1222,35 +1197,40 @@ export default function ResearchPage() {
 
         .research-loading {
           display: flex;
-
           align-items: center;
           justify-content: center;
 
           gap: 10px;
 
-          padding: 64px 24px;
+          padding:
+            64px 24px;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
-          font-size: 13.5px;
+          font-size:
+            13.5px;
         }
 
         .research-loading svg {
           animation:
-            spin 1s linear infinite;
+            spin
+            1s
+            linear
+            infinite;
 
-          color: var(--gold);
+          color:
+            var(--gold);
         }
 
         @keyframes spin {
           to {
-            transform: rotate(360deg);
+            transform:
+              rotate(360deg);
           }
         }
 
-
-        /* ── Modal ── */
-
+        /* ── Modal Overlay ── */
         .modal-overlay {
           position: fixed;
           inset: 0;
@@ -1258,14 +1238,18 @@ export default function ResearchPage() {
           background:
             rgba(12,18,32,0.45);
 
-          backdrop-filter: blur(3px);
+          backdrop-filter:
+            blur(3px);
 
           z-index: 100;
 
           display: flex;
 
-          align-items: center;
-          justify-content: center;
+          align-items:
+            center;
+
+          justify-content:
+            center;
 
           padding: 24px;
         }
@@ -1277,16 +1261,21 @@ export default function ResearchPage() {
             1px solid
             rgba(31,42,68,0.10);
 
-          border-radius: var(--radius-lg);
+          border-radius:
+            var(--radius-lg);
 
           width: 100%;
-          max-width: 760px;
+
+          max-width:
+            760px;
 
           max-height:
             calc(100vh - 48px);
 
           display: flex;
-          flex-direction: column;
+
+          flex-direction:
+            column;
 
           box-shadow:
             0 24px 64px
@@ -1297,7 +1286,12 @@ export default function ResearchPage() {
           animation:
             modalScaleIn
             0.22s
-            cubic-bezier(0.16,1,0.3,1)
+            cubic-bezier(
+              0.16,
+              1,
+              0.3,
+              1
+            )
             both;
         }
 
@@ -1319,15 +1313,13 @@ export default function ResearchPage() {
 
         .modal-header {
           display: flex;
-
-          justify-content:
-            space-between;
-
-          align-items:
-            flex-start;
+          justify-content: space-between;
+          align-items: flex-start;
 
           padding:
-            26px 28px 18px;
+            26px
+            28px
+            18px;
 
           border-bottom:
             1px solid
@@ -1349,48 +1341,47 @@ export default function ResearchPage() {
           font-size: 18px;
           font-weight: 700;
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
-          letter-spacing: -0.01em;
+          letter-spacing:
+            -0.01em;
         }
 
         .modal-header__sub {
           font-size: 12.5px;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
           margin-top: 4px;
 
-          line-height: 1.5;
+          line-height:
+            1.5;
         }
 
         .modal-header__actions {
           display: flex;
-
           gap: 8px;
-
           align-items: center;
-
           flex-shrink: 0;
-
           margin-left: 16px;
         }
 
         .modal-body {
-          padding: 24px 28px;
+          padding:
+            24px 28px;
 
           overflow-y: auto;
 
           flex: 1;
         }
 
-
-        /* ── Buttons ── */
-
         .btn-modal-cancel {
           height: 38px;
 
-          padding: 0 16px;
+          padding:
+            0 16px;
 
           background: #fff;
 
@@ -1401,7 +1392,8 @@ export default function ResearchPage() {
           border-radius:
             var(--radius-sm);
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
           font-size: 13px;
           font-weight: 500;
@@ -1414,7 +1406,8 @@ export default function ResearchPage() {
         }
 
         .btn-modal-cancel:hover {
-          background: var(--beige-light);
+          background:
+            var(--beige-light);
 
           border-color:
             rgba(31,42,68,0.22);
@@ -1423,9 +1416,12 @@ export default function ResearchPage() {
         .btn-modal-save {
           height: 38px;
 
-          padding: 0 20px;
+          padding:
+            0 20px;
 
-          background: var(--navy);
+          background:
+            var(--navy);
+
           color: #fff;
 
           border: none;
@@ -1444,9 +1440,11 @@ export default function ResearchPage() {
 
           gap: 7px;
 
-          transition: var(--transition);
+          transition:
+            var(--transition);
 
-          letter-spacing: 0.01em;
+          letter-spacing:
+            0.01em;
         }
 
         .btn-modal-save:hover:not(:disabled) {
@@ -1462,17 +1460,13 @@ export default function ResearchPage() {
           cursor: wait;
         }
 
-
-        /* ── Error ── */
-
         .form-error {
           display: flex;
-
           align-items: center;
-
           gap: 9px;
 
-          background: #fff5f5;
+          background:
+            #fff5f5;
 
           border:
             1px solid
@@ -1481,18 +1475,19 @@ export default function ResearchPage() {
           border-radius:
             var(--radius-sm);
 
-          padding: 10px 14px;
+          padding:
+            10px 14px;
 
-          color: #c0392b;
+          color:
+            #c0392b;
 
           font-size: 13px;
 
-          margin-bottom: 20px;
+          margin-bottom:
+            20px;
         }
 
-
-        /* ── Form sections ── */
-
+        /* ── Form Sections ── */
         .form-section {
           border:
             1px solid
@@ -1501,9 +1496,11 @@ export default function ResearchPage() {
           border-radius:
             var(--radius-md);
 
-          padding: 18px 20px;
+          padding:
+            18px 20px;
 
-          margin-bottom: 16px;
+          margin-bottom:
+            16px;
 
           background:
             var(--beige-warm);
@@ -1511,24 +1508,29 @@ export default function ResearchPage() {
 
         .form-section__label {
           font-size: 10px;
-
           font-weight: 700;
 
-          letter-spacing: 0.08em;
+          letter-spacing:
+            0.08em;
 
-          text-transform: uppercase;
+          text-transform:
+            uppercase;
 
-          color: var(--gold-dark);
+          color:
+            var(--gold-dark);
 
-          margin-bottom: 14px;
+          margin-bottom:
+            14px;
         }
 
         .field {
-          margin-bottom: 14px;
+          margin-bottom:
+            14px;
         }
 
         .field:last-child {
-          margin-bottom: 0;
+          margin-bottom:
+            0;
         }
 
         .field__label {
@@ -1537,35 +1539,44 @@ export default function ResearchPage() {
           font-size: 12px;
           font-weight: 600;
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
-          margin-bottom: 5px;
+          margin-bottom:
+            5px;
 
-          letter-spacing: 0.02em;
+          letter-spacing:
+            0.02em;
         }
 
         .field__required {
-          color: #c0392b;
-          margin-left: 2px;
+          color:
+            #c0392b;
+
+          margin-left:
+            2px;
         }
 
         .field__hint {
-          font-size: 11.5px;
+          font-size:
+            11.5px;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
-          margin-top: 4px;
+          margin-top:
+            4px;
         }
 
         .field__hint span {
-          color: var(--gold-dark);
+          color:
+            var(--gold-dark);
 
-          font-weight: 600;
+          font-weight:
+            600;
         }
 
-
-        /* ── Inputs ── */
-
+        /* ── Form Inputs ── */
         .ev-input,
         .ev-select,
         .ev-textarea {
@@ -1573,7 +1584,8 @@ export default function ResearchPage() {
 
           height: 42px;
 
-          padding: 0 12px;
+          padding:
+            0 12px;
 
           background: #fff;
 
@@ -1584,13 +1596,16 @@ export default function ResearchPage() {
           border-radius:
             var(--radius-sm);
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
-          font-size: 13px;
+          font-size:
+            13px;
 
           outline: none;
 
-          box-sizing: border-box;
+          box-sizing:
+            border-box;
 
           transition:
             border-color 0.2s,
@@ -1600,11 +1615,14 @@ export default function ResearchPage() {
         .ev-textarea {
           height: auto;
 
-          padding: 10px 12px;
+          padding:
+            10px 12px;
 
-          resize: vertical;
+          resize:
+            vertical;
 
-          line-height: 1.6;
+          line-height:
+            1.6;
         }
 
         .ev-input:focus,
@@ -1620,20 +1638,19 @@ export default function ResearchPage() {
 
         .ev-input::placeholder,
         .ev-textarea::placeholder {
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
         }
 
-
-        /* ── Tags ── */
-
+        /* Tags */
         .form-tag {
           display: inline-flex;
-
           align-items: center;
 
           gap: 5px;
 
-          padding: 3px 10px;
+          padding:
+            3px 10px;
 
           background:
             var(--beige-light);
@@ -1642,43 +1659,47 @@ export default function ResearchPage() {
             1px solid
             var(--beige-dark);
 
-          border-radius: 20px;
+          border-radius:
+            20px;
 
-          font-size: 11.5px;
-          font-weight: 500;
+          font-size:
+            11.5px;
 
-          color: var(--navy);
+          font-weight:
+            500;
+
+          color:
+            var(--navy);
         }
 
         .form-tag__remove {
           background: none;
           border: none;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
           cursor: pointer;
 
-          font-size: 13px;
+          font-size:
+            13px;
 
-          line-height: 1;
+          line-height:
+            1;
 
           padding: 0;
 
           display: flex;
-
           align-items: center;
         }
 
         .form-tag__remove:hover {
-          color: #c0392b;
+          color:
+            #c0392b;
         }
-
-
-        /* ── Author ── */
 
         .author-remove-btn {
           display: flex;
-
           align-items: center;
           justify-content: center;
 
@@ -1686,14 +1707,15 @@ export default function ResearchPage() {
           height: 28px;
 
           background: none;
-
           border: none;
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
           cursor: pointer;
 
-          font-size: 18px;
+          font-size:
+            18px;
 
           border-radius:
             var(--radius-sm);
@@ -1704,14 +1726,15 @@ export default function ResearchPage() {
         }
 
         .author-remove-btn:hover:not(:disabled) {
-          color: #c0392b;
+          color:
+            #c0392b;
 
-          background: #fff5f5;
+          background:
+            #fff5f5;
         }
 
         .btn-add-dashed {
           display: flex;
-
           align-items: center;
 
           gap: 6px;
@@ -1725,14 +1748,19 @@ export default function ResearchPage() {
           border-radius:
             var(--radius-sm);
 
-          color: var(--text-muted);
+          color:
+            var(--text-muted);
 
-          padding: 7px 12px;
+          padding:
+            7px 12px;
 
           cursor: pointer;
 
-          font-size: 12px;
-          font-weight: 500;
+          font-size:
+            12px;
+
+          font-weight:
+            500;
 
           transition:
             border-color 0.15s,
@@ -1741,20 +1769,19 @@ export default function ResearchPage() {
         }
 
         .btn-add-dashed:hover {
-          border-color: var(--gold);
+          border-color:
+            var(--gold);
 
-          color: var(--gold-dark);
+          color:
+            var(--gold-dark);
 
           background:
             rgba(200,167,94,0.05);
         }
 
-
-        /* ── Toggle ── */
-
+        /* Toggle */
         .toggle {
           display: flex;
-
           align-items: center;
 
           gap: 10px;
@@ -1766,9 +1793,11 @@ export default function ResearchPage() {
           width: 36px;
           height: 20px;
 
-          border-radius: 10px;
+          border-radius:
+            10px;
 
-          position: relative;
+          position:
+            relative;
 
           background:
             rgba(31,42,68,0.15);
@@ -1776,27 +1805,33 @@ export default function ResearchPage() {
           transition:
             background 0.2s;
 
-          flex-shrink: 0;
+          flex-shrink:
+            0;
         }
 
         .toggle__track--on {
-          background: var(--navy);
+          background:
+            var(--navy);
         }
 
         .toggle__thumb {
-          position: absolute;
+          position:
+            absolute;
 
           top: 3px;
 
           width: 14px;
           height: 14px;
 
-          border-radius: 50%;
+          border-radius:
+            50%;
 
-          background: #fff;
+          background:
+            #fff;
 
           transition:
-            left 0.18s
+            left
+            0.18s
             cubic-bezier(
               0.25,
               0.46,
@@ -1810,298 +1845,22 @@ export default function ResearchPage() {
         }
 
         .toggle__label {
-          font-size: 13px;
+          font-size:
+            13px;
 
-          color: var(--navy);
+          color:
+            var(--navy);
 
-          font-weight: 500;
+          font-weight:
+            500;
         }
 
-
-        /* ── PDF uploader ── */
-
-        .pdf-upload-box {
-          border:
-            1.5px dashed
-            rgba(31,42,68,0.18);
-
-          background: #fff;
-
-          border-radius:
-            var(--radius-md);
-
-          padding: 20px;
-
-          transition:
-            border-color 0.2s,
-            background 0.2s;
-        }
-
-        .pdf-upload-box:hover {
-          border-color: var(--gold);
-
-          background:
-            rgba(200,167,94,0.025);
-        }
-
-        .pdf-upload-empty {
-          display: flex;
-
-          align-items: center;
-
-          justify-content: space-between;
-
-          gap: 16px;
-        }
-
-        .pdf-upload-info {
-          display: flex;
-
-          align-items: center;
-
-          gap: 13px;
-
-          min-width: 0;
-        }
-
-        .pdf-upload-icon {
-          width: 42px;
-          height: 42px;
-
-          border-radius: 10px;
-
-          background:
-            var(--beige-light);
-
-          color: var(--navy);
-
-          display: flex;
-
-          align-items: center;
-
-          justify-content: center;
-
-          flex-shrink: 0;
-        }
-
-        .pdf-upload-title {
-          font-size: 13px;
-
-          font-weight: 600;
-
-          color: var(--navy);
-
-          margin-bottom: 3px;
-        }
-
-        .pdf-upload-subtitle {
-          font-size: 11px;
-
-          color: var(--text-muted);
-
-          line-height: 1.45;
-        }
-
-        .pdf-upload-button {
-          display: inline-flex;
-
-          align-items: center;
-
-          gap: 7px;
-
-          height: 36px;
-
-          padding: 0 14px;
-
-          border: 1px solid
-            rgba(31,42,68,0.14);
-
-          border-radius:
-            var(--radius-sm);
-
-          background: #fff;
-
-          color: var(--navy);
-
-          font-size: 12px;
-
-          font-weight: 600;
-
-          cursor: pointer;
-
-          white-space: nowrap;
-
-          transition:
-            background 0.15s,
-            border-color 0.15s;
-        }
-
-        .pdf-upload-button:hover {
-          background:
-            var(--beige-light);
-
-          border-color:
-            var(--gold);
-        }
-
-        .pdf-upload-button:disabled {
-          opacity: 0.55;
-
-          cursor: wait;
-        }
-
-        .pdf-file-selected {
-          display: flex;
-
-          align-items: center;
-
-          justify-content: space-between;
-
-          gap: 12px;
-        }
-
-        .pdf-file-details {
-          display: flex;
-
-          align-items: center;
-
-          gap: 12px;
-
-          min-width: 0;
-        }
-
-        .pdf-file-icon {
-          width: 42px;
-          height: 42px;
-
-          display: flex;
-
-          align-items: center;
-          justify-content: center;
-
-          border-radius: 10px;
-
-          background:
-            rgba(31,42,68,0.07);
-
-          color: var(--navy);
-
-          flex-shrink: 0;
-        }
-
-        .pdf-file-name {
-          font-size: 12.5px;
-
-          font-weight: 600;
-
-          color: var(--navy);
-
-          overflow: hidden;
-
-          text-overflow: ellipsis;
-
-          white-space: nowrap;
-
-          max-width: 430px;
-        }
-
-        .pdf-file-status {
-          font-size: 11px;
-
-          color: var(--text-muted);
-
-          margin-top: 3px;
-        }
-
-        .pdf-file-actions {
-          display: flex;
-
-          gap: 6px;
-
-          flex-shrink: 0;
-        }
-
-        .pdf-small-button {
-          display: inline-flex;
-
-          align-items: center;
-          justify-content: center;
-
-          width: 32px;
-          height: 32px;
-
-          border: 1px solid
-            rgba(31,42,68,0.12);
-
-          background: #fff;
-
-          color: var(--navy);
-
-          border-radius:
-            var(--radius-sm);
-
-          cursor: pointer;
-        }
-
-        .pdf-small-button:hover {
-          background:
-            var(--beige-light);
-        }
-
-        .pdf-small-button.danger:hover {
-          color: #c0392b;
-
-          background: #fff5f5;
-        }
-
-        .pdf-progress {
-          margin-top: 14px;
-        }
-
-        .pdf-progress-track {
-          width: 100%;
-
-          height: 5px;
-
-          background:
-            rgba(31,42,68,0.08);
-
-          border-radius: 10px;
-
-          overflow: hidden;
-        }
-
-        .pdf-progress-bar {
-          height: 100%;
-
-          background: var(--gold);
-
-          border-radius: 10px;
-
-          transition:
-            width 0.25s ease;
-        }
-
-        .pdf-progress-label {
-          display: flex;
-
-          justify-content:
-            space-between;
-
-          margin-top: 6px;
-
-          font-size: 10.5px;
-
-          color: var(--text-muted);
-        }
-
-
-        /* ── Footer ── */
-
+        /* Modal Footer */
         .modal-footer {
           display: flex;
 
-          justify-content: flex-end;
+          justify-content:
+            flex-end;
 
           gap: 10px;
 
@@ -2122,36 +1881,189 @@ export default function ResearchPage() {
             var(--radius-lg);
         }
 
+        /* ── PDF Upload ── */
+        .pdf-upload-box {
+          display: flex;
+          align-items: center;
 
-        /* ── Responsive ── */
+          flex-wrap: wrap;
+
+          gap: 10px;
+
+          min-height:
+            48px;
+
+          padding:
+            10px;
+
+          border:
+            1px dashed
+            rgba(200,167,94,0.55);
+
+          border-radius:
+            var(--radius-sm);
+
+          background:
+            var(--beige-light);
+        }
+
+        .pdf-upload-button {
+          display: inline-flex;
+          align-items: center;
+
+          gap: 7px;
+
+          min-height:
+            38px;
+
+          padding:
+            0 14px;
+
+          border-radius:
+            7px;
+
+          background:
+            var(--navy);
+
+          color:
+            #fff;
+
+          font-size:
+            12px;
+
+          font-weight:
+            700;
+
+          cursor:
+            pointer;
+
+          transition:
+            opacity .2s,
+            transform .2s;
+        }
+
+        .pdf-upload-button:hover {
+          opacity:
+            .92;
+
+          transform:
+            translateY(-1px);
+        }
+
+        .pdf-upload-button--disabled {
+          opacity:
+            .6;
+
+          cursor:
+            wait;
+
+          transform:
+            none;
+        }
+
+        .pdf-upload-link {
+          display: inline-flex;
+          align-items: center;
+
+          gap: 6px;
+
+          min-height:
+            38px;
+
+          padding:
+            0 12px;
+
+          border:
+            1px solid
+            rgba(31,42,68,0.12);
+
+          border-radius:
+            7px;
+
+          color:
+            var(--navy);
+
+          background:
+            #fff;
+
+          font-size:
+            12px;
+
+          font-weight:
+            600;
+
+          text-decoration:
+            none;
+        }
+
+        .pdf-upload-link:hover {
+          border-color:
+            var(--gold);
+        }
+
+        .pdf-upload-hint {
+          margin-top:
+            7px;
+
+          color:
+            var(--text-muted);
+
+          font-size:
+            10.5px;
+        }
+
+        .pdf-upload-error {
+          display: flex;
+          align-items: center;
+
+          gap: 5px;
+
+          margin-top:
+            7px;
+
+          color:
+            #b42318;
+
+          font-size:
+            11px;
+        }
 
         @media (max-width: 768px) {
           .research-page {
-            padding: 20px;
+            padding:
+              20px 20px;
           }
 
           .research-header {
-            flex-direction: column;
+            flex-direction:
+              column;
 
-            align-items: flex-start;
+            align-items:
+              flex-start;
 
-            gap: 16px;
+            gap:
+              16px;
           }
 
           .btn-add-research {
-            align-self: flex-start;
+            align-self:
+              flex-start;
           }
 
           .research-content-card__header {
-            flex-direction: column;
+            flex-direction:
+              column;
 
-            align-items: flex-start;
+            align-items:
+              flex-start;
 
-            gap: 12px;
+            gap:
+              12px;
           }
 
           .research-search-input {
-            width: 100%;
+            width:
+              100%;
           }
 
           .modal-panel {
@@ -2160,36 +2072,16 @@ export default function ResearchPage() {
           }
 
           .research-header__title {
-            font-size: 24px;
-          }
-
-          .pdf-upload-empty,
-          .pdf-file-selected {
-            align-items: flex-start;
-
-            flex-direction: column;
-          }
-
-          .pdf-file-name {
-            max-width: 250px;
-          }
-
-          .pdf-upload-button {
-            width: 100%;
-
-            justify-content: center;
+            font-size:
+              24px;
           }
         }
-
       `}</style>
-
 
       <div className="research-page">
 
-        {/* ── Header ── */}
-
+        {/* ── Page Header ── */}
         <div className="research-header">
-
           <div className="research-header__left">
 
             <div className="research-header__icon-box">
@@ -2200,7 +2092,6 @@ export default function ResearchPage() {
             </div>
 
             <div className="research-header__title-container">
-
               <div className="research-header__eyebrow">
                 Publications
               </div>
@@ -2212,11 +2103,8 @@ export default function ResearchPage() {
               <p className="research-header__subtitle">
                 Manage YVU research publications and academic papers.
               </p>
-
             </div>
-
           </div>
-
 
           <button
             className="btn-add-research"
@@ -2229,18 +2117,14 @@ export default function ResearchPage() {
 
             Add Research
           </button>
-
         </div>
 
-
-        {/* ── Table Card ── */}
-
+        {/* ── Unified Table Card ── */}
         <div className="research-content-card">
 
           <div className="research-content-card__header">
 
             <div className="research-content-card__title-area">
-
               <span className="research-content-card__count-label">
                 Records
               </span>
@@ -2250,12 +2134,9 @@ export default function ResearchPage() {
                   ? '—'
                   : filtered.length}
               </span>
-
             </div>
 
-
             <div className="research-content-card__search">
-
               <Search
                 size={13}
                 strokeWidth={2}
@@ -2269,29 +2150,20 @@ export default function ResearchPage() {
                 }
                 placeholder="Search publications…"
               />
-
             </div>
-
           </div>
 
-
           <div>
-
             {loading ? (
-
               <div className="research-loading">
-
                 <Loader2
                   size={16}
                   strokeWidth={2}
                 />
 
                 Loading research records…
-
               </div>
-
             ) : filtered.length === 0 ? (
-
               <div className="research-empty">
 
                 <FileText
@@ -2305,19 +2177,14 @@ export default function ResearchPage() {
                     : 'No research entries yet. Add your first publication.'
                   }
                 </p>
-
               </div>
-
             ) : (
-
               <div className="research-table-wrapper">
 
                 <table className="research-table">
 
                   <thead>
-
                     <tr>
-
                       <th className="col-date">
                         Date
                       </th>
@@ -2338,16 +2205,11 @@ export default function ResearchPage() {
                         Status
                       </th>
 
-                      <th className="col-actions">
-                      </th>
-
+                      <th className="col-actions"></th>
                     </tr>
-
                   </thead>
 
-
                   <tbody>
-
                     {filtered.map(item => {
 
                       const statusConf =
@@ -2366,7 +2228,7 @@ export default function ResearchPage() {
                               {
                                 day: 'numeric',
                                 month: 'short',
-                                year: 'numeric',
+                                year: 'numeric'
                               }
                             )
                           : '—'
@@ -2379,15 +2241,12 @@ export default function ResearchPage() {
                               .join(', ')
                           : '—'
 
-
                       return (
-
                         <tr key={item.id}>
 
                           <td className="col-date">
                             {rowDate}
                           </td>
-
 
                           <td className="col-title">
 
@@ -2401,7 +2260,6 @@ export default function ResearchPage() {
 
                                 {!item.is_published &&
                                   item.status !== 'Published' && (
-
                                     <span className="badge badge--draft">
 
                                       <EyeOff
@@ -2410,17 +2268,12 @@ export default function ResearchPage() {
                                       />
 
                                       Draft
-
                                     </span>
-
-                                )}
+                                  )}
 
                               </div>
-
                             </div>
-
                           </td>
-
 
                           <td
                             className="col-authors"
@@ -2429,16 +2282,12 @@ export default function ResearchPage() {
                             {authorList || '—'}
                           </td>
 
-
                           <td className="col-category">
-
                             <span className="category-pill">
                               {item.category ||
                                 'General'}
                             </span>
-
                           </td>
-
 
                           <td className="col-status">
 
@@ -2455,7 +2304,6 @@ export default function ResearchPage() {
                                   statusConf.border,
                               }}
                             >
-
                               <StatusIcon
                                 size={9}
                                 strokeWidth={2.5}
@@ -2463,11 +2311,8 @@ export default function ResearchPage() {
 
                               {item.status ||
                                 'Draft'}
-
                             </span>
-
                           </td>
-
 
                           <td className="col-actions">
 
@@ -2475,18 +2320,15 @@ export default function ResearchPage() {
 
                               <button
                                 className="action-menu-btn"
-
                                 onClick={e => {
 
                                   if (
                                     activeMenuId ===
                                     item.id
                                   ) {
-
                                     setActiveMenuId(
                                       null
                                     )
-
                                   } else {
 
                                     const rect =
@@ -2495,11 +2337,12 @@ export default function ResearchPage() {
 
                                     setMenuPos({
                                       top:
-                                        rect.bottom + 5,
+                                        rect.bottom +
+                                        5,
 
                                       right:
                                         window.innerWidth -
-                                        rect.right,
+                                        rect.right
                                     })
 
                                     setActiveMenuId(
@@ -2507,54 +2350,47 @@ export default function ResearchPage() {
                                     )
                                   }
                                 }}
-
                                 aria-label="Actions"
                               >
-
                                 <MoreVertical
                                   size={14}
                                   strokeWidth={1.5}
                                 />
-
                               </button>
-
 
                               {activeMenuId ===
                                 item.id && (
-
                                 <>
 
                                   <div
                                     onClick={() =>
-                                      setActiveMenuId(null)
+                                      setActiveMenuId(
+                                        null
+                                      )
                                     }
-
                                     style={{
                                       position:
                                         'fixed',
 
                                       inset: 0,
 
-                                      zIndex: 10,
+                                      zIndex: 10
                                     }}
                                   />
 
-
                                   <div
                                     className="dropdown-menu"
-
                                     style={{
                                       top:
                                         menuPos.top,
 
                                       right:
-                                        menuPos.right,
+                                        menuPos.right
                                     }}
                                   >
 
                                     <button
                                       className="dropdown-item"
-
                                       onClick={() => {
 
                                         if (
@@ -2571,78 +2407,36 @@ export default function ResearchPage() {
                                         )
                                       }}
                                     >
-
                                       <ExternalLink
                                         size={12}
                                         strokeWidth={2}
                                       />
 
                                       View
-
                                     </button>
-
-
-                                    {item.pdf_url && (
-
-                                      <button
-                                        className="dropdown-item"
-
-                                        onClick={() => {
-
-                                          window.open(
-                                            item.pdf_url,
-                                            '_blank'
-                                          )
-
-                                          setActiveMenuId(
-                                            null
-                                          )
-                                        }}
-                                      >
-
-                                        <FileText
-                                          size={12}
-                                          strokeWidth={2}
-                                        />
-
-                                        View PDF
-
-                                      </button>
-
-                                    )}
-
 
                                     <button
                                       className="dropdown-item"
-
                                       onClick={() => {
-
                                         openEdit(item)
-
                                         setActiveMenuId(
                                           null
                                         )
                                       }}
                                     >
-
                                       <Pencil
                                         size={12}
                                         strokeWidth={2}
                                       />
 
                                       Edit
-
                                     </button>
-
 
                                     <div className="dropdown-divider" />
 
-
                                     <button
                                       className="dropdown-item dropdown-item--danger"
-
                                       onClick={() => {
-
                                         setDeleteItem(
                                           item
                                         )
@@ -2652,168 +2446,109 @@ export default function ResearchPage() {
                                         )
                                       }}
                                     >
-
                                       <Trash2
                                         size={12}
                                         strokeWidth={2}
                                       />
 
                                       Delete
-
                                     </button>
 
                                   </div>
-
                                 </>
-
                               )}
 
                             </div>
-
                           </td>
 
                         </tr>
-
                       )
                     })}
-
                   </tbody>
 
                 </table>
-
               </div>
-
             )}
-
           </div>
-
         </div>
 
-
         {/* ── Add / Edit Modal ── */}
-
         {showModal && (
-
           <div
             className="modal-overlay"
-
             onClick={e => {
-
               if (
                 e.target ===
                 e.currentTarget
               ) {
-                if (
-                  !saving &&
-                  !uploadingPdf
-                ) {
-                  setShowModal(false)
-                }
+                setShowModal(false)
               }
-
             }}
           >
 
             <div className="modal-panel">
 
-
-              {/* Header */}
-
+              {/* Sticky Header */}
               <div className="modal-header">
 
                 <div>
 
                   <h2 className="modal-header__title">
-
                     {editItem
                       ? 'Edit Research'
                       : 'Add Research'}
-
                   </h2>
 
-
                   <div className="modal-header__sub">
-
                     {editItem
                       ? `Editing: ${editItem.title}`
                       : 'Fill in the fields to include a new publication record.'
                     }
-
                   </div>
 
                 </div>
-
 
                 <div className="modal-header__actions">
 
                   <button
                     className="btn-modal-cancel"
-
-                    onClick={() => {
-
-                      if (
-                        !saving &&
-                        !uploadingPdf
-                      ) {
-                        setShowModal(false)
-                      }
-
-                    }}
-
-                    disabled={
-                      saving ||
-                      uploadingPdf
+                    onClick={() =>
+                      setShowModal(false)
                     }
                   >
                     Cancel
                   </button>
 
-
                   <button
                     className="btn-modal-save"
-
                     onClick={handleSubmit}
-
-                    disabled={
-                      saving ||
-                      uploadingPdf
-                    }
+                    disabled={saving}
                   >
 
-                    {saving ||
-                    uploadingPdf ? (
-
+                    {saving && (
                       <Loader2
                         size={13}
                         strokeWidth={2.5}
                         style={{
                           animation:
-                            'spin 1s linear infinite',
+                            'spin 1s linear infinite'
                         }}
                       />
+                    )}
 
-                    ) : null}
-
-
-                    {uploadingPdf
-                      ? 'Uploading…'
-                      : saving
-                        ? 'Saving…'
-                        : 'Save'}
+                    {saving
+                      ? 'Saving…'
+                      : 'Save'}
 
                   </button>
 
                 </div>
-
               </div>
 
-
-              {/* Body */}
-
+              {/* Scrollable Content */}
               <div className="modal-body">
 
                 {formError && (
-
                   <div className="form-error">
 
                     <AlertCircle
@@ -2822,81 +2557,54 @@ export default function ResearchPage() {
                     />
 
                     {formError}
-
                   </div>
-
                 )}
 
-
-                {/* Basic information */}
-
+                {/* Basic Information */}
                 <Section title="Basic Information">
 
                   <Field
                     label="Title"
                     required
                   >
-
                     <input
                       name="title"
-
                       value={form.title}
-
                       onChange={handleInput}
-
                       placeholder="Research publication title"
-
                       className="ev-input"
                     />
-
                   </Field>
-
 
                   <Field label="URL Slug">
 
                     <input
                       name="slug"
-
                       value={form.slug}
-
                       onChange={handleInput}
-
                       placeholder="auto-generated-from-title"
-
                       className="ev-input"
                     />
 
-
                     {form.slug && (
-
                       <div className="field__hint">
-
                         Preview:{' '}
-
                         <span>
                           /research/{form.slug}
                         </span>
-
                       </div>
-
                     )}
 
                   </Field>
-
 
                   <Field label="Abstract">
 
                     <textarea
                       name="abstract"
-
                       value={form.abstract}
-
                       onChange={handleInput}
-
                       placeholder="Brief summary or context of the research report…"
-
                       className="ev-textarea"
-
                       rows={4}
                     />
 
@@ -2904,29 +2612,21 @@ export default function ResearchPage() {
 
                 </Section>
 
-
                 {/* Authors */}
-
                 <Section title="Authors">
 
                   {form.authors.map(
                     (author, i) => (
-
                       <div
                         key={i}
-
                         style={{
                           display: 'grid',
-
                           gridTemplateColumns:
                             '2fr 1.5fr 2fr auto',
-
                           gap: '8px',
-
                           marginBottom: '8px',
-
                           alignItems:
-                            'center',
+                            'center'
                         }}
                       >
 
@@ -2934,7 +2634,6 @@ export default function ResearchPage() {
                           value={
                             author.name
                           }
-
                           onChange={e =>
                             setAuthorField(
                               i,
@@ -2942,18 +2641,14 @@ export default function ResearchPage() {
                               e.target.value
                             )
                           }
-
                           placeholder="Full name"
-
                           className="ev-input"
                         />
-
 
                         <input
                           value={
                             author.role
                           }
-
                           onChange={e =>
                             setAuthorField(
                               i,
@@ -2961,18 +2656,14 @@ export default function ResearchPage() {
                               e.target.value
                             )
                           }
-
                           placeholder="Role (e.g. Lead)"
-
                           className="ev-input"
                         />
-
 
                         <input
                           value={
                             author.affiliation
                           }
-
                           onChange={e =>
                             setAuthorField(
                               i,
@@ -2980,71 +2671,56 @@ export default function ResearchPage() {
                               e.target.value
                             )
                           }
-
                           placeholder="Affiliation"
-
                           className="ev-input"
                         />
-
 
                         <button
                           onClick={() =>
                             removeAuthor(i)
                           }
-
                           disabled={
                             form.authors
                               .length === 1
                           }
-
                           className="author-remove-btn"
                         >
                           ×
                         </button>
 
                       </div>
-
                     )
                   )}
 
-
                   <button
                     onClick={addAuthor}
-
                     className="btn-add-dashed"
                   >
-
                     <Plus
                       size={12}
                       strokeWidth={2.5}
                     />
 
                     Add Author
-
                   </button>
 
                 </Section>
 
-
                 {/* Tags */}
-
                 <Section title="Tags / Keywords">
 
                   <div
                     style={{
                       display: 'flex',
-
                       flexWrap: 'wrap',
-
                       gap: '6px',
-
-                      marginBottom: '12px',
+                      marginBottom:
+                        '12px'
                     }}
                   >
 
                     {form.tags.map(
                       (tag, i) => (
-
                         <span
                           key={i}
                           className="form-tag"
@@ -3056,76 +2732,58 @@ export default function ResearchPage() {
                             onClick={() =>
                               removeTag(tag)
                             }
-
                             className="form-tag__remove"
                           >
                             ×
                           </button>
 
                         </span>
-
                       )
                     )}
 
                   </div>
 
-
                   <div
                     style={{
                       display: 'flex',
-                      gap: '8px',
+                      gap: '8px'
                     }}
                   >
 
                     <input
                       value={tagInput}
-
                       onChange={e =>
                         setTagInput(
                           e.target.value
                         )
                       }
-
                       onKeyDown={e => {
-
                         if (
                           e.key ===
                             'Enter' ||
                           e.key === ','
                         ) {
-
                           e.preventDefault()
-
                           addTag(tagInput)
-
                         }
-
                       }}
-
                       placeholder="Type keyword and press Enter"
-
                       className="ev-input"
-
                       style={{
-                        flex: 1,
+                        flex: 1
                       }}
                     />
-
 
                     <button
                       onClick={() =>
                         addTag(tagInput)
                       }
-
                       className="btn-add-research"
-
                       style={{
                         height: 42,
-
                         padding:
                           '0 16px',
-
-                        fontSize: 12,
+                        fontSize: 12
                       }}
                     >
                       + Add
@@ -3135,81 +2793,64 @@ export default function ResearchPage() {
 
                 </Section>
 
-
                 {/* Publishing */}
-
                 <Section title="Publishing">
 
                   <Field label="Status">
 
                     <select
                       name="status"
-
                       value={form.status}
-
                       onChange={handleInput}
-
                       className="ev-select"
                     >
-
                       {[
                         'Draft',
                         'Under Review',
-                        'Published',
+                        'Published'
                       ].map(s => (
-
                         <option
                           key={s}
                           value={s}
                         >
                           {s}
                         </option>
-
                       ))}
-
                     </select>
 
                   </Field>
 
-
                   <div
                     style={{
-                      marginTop: '14px',
+                      marginTop:
+                        '14px'
                     }}
                   >
-
                     <Toggle
                       checked={
                         form.is_published
                       }
-
                       onChange={v =>
                         setField(
                           'is_published',
                           v
                         )
                       }
-
                       label="Published (visible on public site)"
                     />
-
                   </div>
 
                 </Section>
 
-
                 {/* Details */}
-
                 <Section title="Details">
 
                   <div
                     style={{
                       display: 'grid',
-
                       gridTemplateColumns:
                         '1fr 1fr',
-
-                      gap: '14px',
+                      gap: '14px'
                     }}
                   >
 
@@ -3217,38 +2858,29 @@ export default function ResearchPage() {
 
                       <input
                         name="category"
-
                         value={
                           form.category
                         }
-
                         onChange={
                           handleInput
                         }
-
                         placeholder="e.g. Education, Policy, Health"
-
                         className="ev-input"
                       />
 
                     </Field>
 
-
                     <Field label="Publication Date">
 
                       <input
                         name="published_at"
-
                         type="date"
-
                         value={
                           form.published_at
                         }
-
                         onChange={
                           handleInput
                         }
-
                         className="ev-input"
                       />
 
@@ -3258,386 +2890,129 @@ export default function ResearchPage() {
 
                 </Section>
 
-
-                {/* PDF */}
-
-                <Section title="Research Paper PDF">
-
-                  <Field label="Upload PDF">
-
-                    <input
-                      ref={fileInputRef}
-
-                      type="file"
-
-                      accept="application/pdf,.pdf"
-
-                      onChange={
-                        handlePdfUpload
-                      }
-
-                      style={{
-                        display: 'none',
-                      }}
-                    />
-
-
-                    {!form.pdf_url ? (
-
-                      <div className="pdf-upload-box">
-
-                        <div className="pdf-upload-empty">
-
-                          <div className="pdf-upload-info">
-
-                            <div className="pdf-upload-icon">
-
-                              <FileUp
-                                size={20}
-                                strokeWidth={1.7}
-                              />
-
-                            </div>
-
-
-                            <div>
-
-                              <div className="pdf-upload-title">
-                                Upload research paper
-                              </div>
-
-                              <div className="pdf-upload-subtitle">
-                                PDF only · Maximum 25 MB
-                                <br />
-                                The file will be stored securely in Supabase Storage.
-                              </div>
-
-                            </div>
-
-                          </div>
-
-
-                          <button
-                            type="button"
-
-                            className="pdf-upload-button"
-
-                            onClick={() =>
-                              fileInputRef.current?.click()
-                            }
-
-                            disabled={
-                              uploadingPdf
-                            }
-                          >
-
-                            {uploadingPdf ? (
-
-                              <>
-                                <Loader2
-                                  size={14}
-                                  style={{
-                                    animation:
-                                      'spin 1s linear infinite',
-                                  }}
-                                />
-
-                                Uploading…
-
-                              </>
-
-                            ) : (
-
-                              <>
-                                <Upload
-                                  size={14}
-                                />
-
-                                Choose PDF
-
-                              </>
-
-                            )}
-
-                          </button>
-
-                        </div>
-
-
-                        {uploadingPdf && (
-
-                          <div className="pdf-progress">
-
-                            <div className="pdf-progress-track">
-
-                              <div
-                                className="pdf-progress-bar"
-
-                                style={{
-                                  width:
-                                    `${uploadProgress}%`,
-                                }}
-                              />
-
-                            </div>
-
-
-                            <div className="pdf-progress-label">
-
-                              <span>
-                                Uploading paper…
-                              </span>
-
-                              <span>
-                                {uploadProgress}%
-                              </span>
-
-                            </div>
-
-                          </div>
-
-                        )}
-
-                      </div>
-
-                    ) : (
-
-                      <div className="pdf-upload-box">
-
-                        <div className="pdf-file-selected">
-
-                          <div className="pdf-file-details">
-
-                            <div className="pdf-file-icon">
-
-                              <FileText
-                                size={20}
-                                strokeWidth={1.7}
-                              />
-
-                            </div>
-
-
-                            <div>
-
-                              <div className="pdf-file-name">
-
-                                {(() => {
-
-                                  try {
-
-                                    const url =
-                                      new URL(
-                                        form.pdf_url
-                                      )
-
-                                    const name =
-                                      decodeURIComponent(
-                                        url.pathname
-                                          .split('/')
-                                          .pop() ||
-                                          'Research Paper.pdf'
-                                      )
-
-                                    return name
-
-                                  } catch {
-
-                                    return 'Research Paper.pdf'
-
-                                  }
-
-                                })()}
-
-                              </div>
-
-
-                              <div className="pdf-file-status">
-
-                                PDF uploaded successfully
-
-                              </div>
-
-                            </div>
-
-                          </div>
-
-
-                          <div className="pdf-file-actions">
-
-                            <button
-                              type="button"
-
-                              className="pdf-small-button"
-
-                              title="View PDF"
-
-                              onClick={() =>
-                                window.open(
-                                  form.pdf_url,
-                                  '_blank'
-                                )
-                              }
-                            >
-
-                              <ExternalLink
-                                size={14}
-                              />
-
-                            </button>
-
-
-                            <button
-                              type="button"
-
-                              className="pdf-small-button"
-
-                              title="Download PDF"
-
-                              onClick={() => {
-
-                                const link =
-                                  document.createElement(
-                                    'a'
-                                  )
-
-                                link.href =
-                                  form.pdf_url
-
-                                link.target =
-                                  '_blank'
-
-                                link.rel =
-                                  'noopener noreferrer'
-
-                                link.click()
-
-                              }}
-                            >
-
-                              <Download
-                                size={14}
-                              />
-
-                            </button>
-
-
-                            <button
-                              type="button"
-
-                              className="pdf-small-button danger"
-
-                              title="Remove PDF"
-
-                              onClick={
-                                removePdf
-                              }
-                            >
-
-                              <X
-                                size={14}
-                              />
-
-                            </button>
-
-                          </div>
-
-                        </div>
-
-
-                        <div
+                {/* Links & Resources */}
+                <Section title="Links &amp; Resources">
+
+                  {/* PDF Upload */}
+                  <Field label="Research Paper PDF">
+
+                    <div className="pdf-upload-box">
+
+                      <label
+                        className={
+                          `pdf-upload-button${
+                            uploadingPdf
+                              ? ' pdf-upload-button--disabled'
+                              : ''
+                          }`
+                        }
+                      >
+
+                        <Upload
+                          size={15}
+                          strokeWidth={2}
+                        />
+
+                        {uploadingPdf
+                          ? 'Uploading PDF…'
+                          : (
+                              form.pdf_url
+                                ? 'Replace PDF'
+                                : 'Upload PDF'
+                            )
+                        }
+
+                        <input
+                          type="file"
+                          accept="application/pdf,.pdf"
+                          onChange={
+                            handlePdfUpload
+                          }
+                          disabled={
+                            uploadingPdf
+                          }
                           style={{
-                            marginTop: 12,
+                            display:
+                              'none'
                           }}
+                        />
+
+                      </label>
+
+                      {form.pdf_url && (
+                        <a
+                          href={
+                            form.pdf_url
+                          }
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="pdf-upload-link"
                         >
 
-                          <button
-                            type="button"
+                          <FileText
+                            size={14}
+                            strokeWidth={1.8}
+                          />
 
-                            className="pdf-upload-button"
+                          View uploaded PDF
 
-                            onClick={() =>
-                              fileInputRef.current?.click()
-                            }
+                          <ExternalLink
+                            size={12}
+                            strokeWidth={1.8}
+                          />
 
-                            disabled={
-                              uploadingPdf
-                            }
-                          >
+                        </a>
+                      )}
 
-                            <Upload
-                              size={13}
-                            />
+                    </div>
 
-                            Replace PDF
+                    <div className="pdf-upload-hint">
+                      PDF only · Maximum 25 MB · Stored securely in Supabase Storage
+                    </div>
 
-                          </button>
+                    {uploadError && (
+                      <div className="pdf-upload-error">
 
-                        </div>
+                        <AlertCircle
+                          size={13}
+                        />
 
-
-                        {uploadingPdf && (
-
-                          <div className="pdf-progress">
-
-                            <div className="pdf-progress-track">
-
-                              <div
-                                className="pdf-progress-bar"
-
-                                style={{
-                                  width:
-                                    `${uploadProgress}%`,
-                                }}
-                              />
-
-                            </div>
-
-
-                            <div className="pdf-progress-label">
-
-                              <span>
-                                Uploading replacement…
-                              </span>
-
-                              <span>
-                                {uploadProgress}%
-                              </span>
-
-                            </div>
-
-                          </div>
-
-                        )}
+                        {uploadError}
 
                       </div>
-
                     )}
 
                   </Field>
 
-                </Section>
+                  {/* Manual PDF URL */}
+                  <Field label="PDF Link (Optional Manual URL)">
 
+                    <input
+                      name="pdf_url"
+                      value={
+                        form.pdf_url
+                      }
+                      onChange={
+                        handleInput
+                      }
+                      placeholder="https://…"
+                      className="ev-input"
+                    />
 
-                {/* External URL */}
+                  </Field>
 
-                <Section title="External Resources">
-
+                  {/* External URL */}
                   <Field label="External URL Link">
 
                     <input
                       name="external_url"
-
                       value={
                         form.external_url
                       }
-
                       onChange={
                         handleInput
                       }
-
                       placeholder="https://…"
-
                       className="ev-input"
                     />
 
@@ -3647,99 +3022,60 @@ export default function ResearchPage() {
 
               </div>
 
-
               {/* Footer */}
-
               <div className="modal-footer">
 
                 <button
                   className="btn-modal-cancel"
-
-                  onClick={() => {
-
-                    if (
-                      !saving &&
-                      !uploadingPdf
-                    ) {
-                      setShowModal(false)
-                    }
-
-                  }}
-
-                  disabled={
-                    saving ||
-                    uploadingPdf
+                  onClick={() =>
+                    setShowModal(false)
                   }
                 >
                   Cancel
                 </button>
 
-
                 <button
                   className="btn-modal-save"
-
-                  onClick={
-                    handleSubmit
-                  }
-
-                  disabled={
-                    saving ||
-                    uploadingPdf
-                  }
+                  onClick={handleSubmit}
+                  disabled={saving}
                 >
 
-                  {saving ||
-                  uploadingPdf ? (
-
+                  {saving && (
                     <Loader2
                       size={13}
                       strokeWidth={2.5}
                       style={{
                         animation:
-                          'spin 1s linear infinite',
+                          'spin 1s linear infinite'
                       }}
                     />
+                  )}
 
-                  ) : null}
-
-
-                  {uploadingPdf
-                    ? 'Uploading…'
-                    : saving
-                      ? 'Saving…'
-                      : 'Save'}
+                  {saving
+                    ? 'Saving…'
+                    : 'Save'}
 
                 </button>
 
               </div>
 
             </div>
-
           </div>
-
         )}
 
-
         {/* ── Delete Confirm ── */}
-
         {deleteItem && (
-
           <DeleteConfirm
-
             itemName={
               `"${deleteItem.title}"`
             }
-
             onConfirm={
               handleDelete
             }
-
             onCancel={() =>
               setDeleteItem(null)
             }
-
           />
-
         )}
 
       </div>
