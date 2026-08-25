@@ -4,11 +4,14 @@
    Poppins typeface throughout.
 ───────────────────────────────────────────────────────── */
 
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap');
+
 /* ── Shell ── */
 .rd2-page {
   background: var(--beige-warm);
   min-height: 100vh;
   color: var(--navy);
+  font-family: 'Poppins', sans-serif;
 }
 
 .rd2-container {
@@ -43,7 +46,7 @@
 /* ── Hero ── */
 .rd2-hero {
   background: linear-gradient(140deg, var(--navy-dark) 0%, var(--navy) 60%, var(--navy-light) 100%);
-  padding: 4rem 0 3.5rem;
+  padding: 4.5rem 0 3.75rem;
   position: relative;
   overflow: hidden;
 }
@@ -56,6 +59,15 @@
   pointer-events: none;
 }
 
+.rd2-hero::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent, var(--gold) 45%, var(--gold) 55%, transparent);
+  opacity: 0.55;
+}
+
 .rd2-hero .rd2-container {
   position: relative;
   z-index: 1;
@@ -65,17 +77,17 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.4rem;
 }
 
 .rd2-badge {
   display: inline-block;
-  padding: 4px 14px;
+  padding: 5px 15px;
   border-radius: 999px;
   font-family: 'Poppins', sans-serif;
-  font-size: 0.7rem;
+  font-size: 0.68rem;
   font-weight: 700;
-  letter-spacing: 0.09em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
 }
 
@@ -93,13 +105,15 @@
 
 .rd2-title {
   font-family: 'Poppins', sans-serif;
-  font-size: clamp(1.7rem, 3.5vw, 2.6rem);
+  font-size: clamp(1.8rem, 3.6vw, 2.75rem);
   font-weight: 800;
   color: #f1f5f9;
-  line-height: 1.2;
-  margin: 0 0 1rem;
+  line-height: 1.22;
+  margin: 0 0 1.1rem;
   max-width: 860px;
-  letter-spacing: -0.015em;
+  letter-spacing: -0.02em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .rd2-date {
@@ -116,26 +130,30 @@
 /* ── Body grid ── */
 .rd2-body {
   display: grid;
-  grid-template-columns: 1fr 300px;
-  gap: 2.5rem;
-  padding-top: 2.5rem;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 2.75rem;
+  padding-top: 2.75rem;
   padding-bottom: 5rem;
   align-items: start;
 }
 
 /* ── Sections ── */
+.rd2-main {
+  min-width: 0;
+}
+
 .rd2-section {
   margin-bottom: 2.75rem;
 }
 
 .rd2-section-title {
   font-family: 'Poppins', sans-serif;
-  font-size: 0.78rem;
+  font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--text-muted);
-  margin: 0 0 1.1rem;
+  margin: 0 0 1.2rem;
   padding-bottom: 0.65rem;
   border-bottom: 2px solid var(--gold);
   display: inline-block;
@@ -144,20 +162,23 @@
 /* ── Abstract ── */
 .rd2-abstract p {
   font-family: 'Poppins', sans-serif;
-  font-size: 1.02rem;
+  font-size: 1.04rem;
   font-weight: 300;
   font-style: italic;
   line-height: 1.9;
   color: #374151;
   margin: 0 0 1.1rem;
   max-width: 760px;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  hyphens: auto;
 }
 
 /* ── Authors ── */
 .rd2-authors-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  gap: 0.85rem;
+  gap: 0.9rem;
 }
 
 .rd2-author-card {
@@ -170,6 +191,7 @@
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-sm);
   transition: var(--transition);
+  min-width: 0;
 }
 
 .rd2-author-card:hover {
@@ -192,6 +214,11 @@
   justify-content: center;
   flex-shrink: 0;
   border: 2px solid rgba(200,167,94,0.2);
+}
+
+.rd2-author-info {
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .rd2-author-name {
@@ -221,14 +248,14 @@
 .rd2-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
+  gap: 0.55rem;
 }
 
 .rd2-tag {
   display: inline-flex;
   align-items: center;
   gap: 5px;
-  padding: 5px 13px;
+  padding: 6px 14px;
   background: #fff;
   border: 1px solid var(--beige-dark);
   border-radius: 999px;
@@ -237,6 +264,8 @@
   font-weight: 500;
   color: var(--text-muted);
   transition: var(--transition);
+  max-width: 100%;
+  overflow-wrap: anywhere;
 }
 
 .rd2-tag:hover {
@@ -248,6 +277,7 @@
 .rd2-sidebar {
   position: sticky;
   top: 2rem;
+  min-width: 0;
 }
 
 .rd2-card {
@@ -281,7 +311,7 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.7rem 1rem;
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
   text-decoration: none;
   font-family: 'Poppins', sans-serif;
@@ -331,13 +361,13 @@
 .rd2-details {
   display: flex;
   flex-direction: column;
-  gap: 0.9rem;
+  gap: 0.95rem;
 }
 
 .rd2-detail-row {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 3px;
 }
 
 .rd2-detail-label {
@@ -354,7 +384,8 @@
   font-size: 0.875rem;
   font-weight: 500;
   color: var(--navy);
-  line-height: 1.4;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
 }
 
 /* ── Responsive ── */
